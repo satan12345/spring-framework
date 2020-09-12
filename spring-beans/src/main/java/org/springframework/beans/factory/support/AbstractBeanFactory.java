@@ -199,6 +199,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 	@Override
 	public Object getBean(String name) throws BeansException {
+		//真正获取bean的逻辑
 		return doGetBean(name, null, null, false);
 	}
 
@@ -241,10 +242,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
-
+		//这里传送进来的name 可能是别名 也课程是工厂bean的name  所以在这里需要转换成bean的Id 也就是beanName
 		final String beanName = transformedBeanName(name);
 		Object bean;
-
+		//尝试从缓存中获取对象
 		// Eagerly check singleton cache for manually registered singletons.
 		Object sharedInstance = getSingleton(beanName);
 		if (sharedInstance != null && args == null) {
@@ -258,18 +259,26 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				}
 			}
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
-		}
+		}else {
+			//spring 只能解决单例对象的setter 注入的循环依赖 不能解决构造器注入的循环依赖
 
-		else {
+
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			if (isPrototypeCurrentlyInCreation(beanName)) {
 				throw new BeanCurrentlyInCreationException(beanName);
 			}
+			/**
+			 * 判断AbstractBeanFactory工厂是否有父工厂（一般情况下是没有父工厂 ）
+			 * 一般情况下 只有Spring 和SpringMVC整合的时候才会有父子容器的概念
+			 * 比如我们的Controller中注入Service的时候 泛型我们依赖的是一个引用对象 那么他就会调用getBean
+			 * 但是当前所在的容器是web子容器 那么就会在这里先去找父容器
+			 */
 
 			// Check if bean definition exists in this factory.
 			BeanFactory parentBeanFactory = getParentBeanFactory();
 			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
+				//如果存在父工厂 且要查找beanDefinition不存在于当前的bean工厂 那么beanDefinition就是存在于父beanFacrory中
 				// Not found -> check parent.
 				String nameToLookup = originalBeanName(name);
 				if (parentBeanFactory instanceof AbstractBeanFactory) {
@@ -294,19 +303,25 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			}
 
 			try {
+				//获取RootBeanDefinition
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
+				//检查当前的BeanDefinition是不是抽象的bean定义
 				checkMergedBeanDefinition(mbd, beanName, args);
 
 				// Guarantee initialization of beans that the current bean depends on.
+				//处理dependsOn的依赖(这个不是循环依赖 而是bean创建前后的依赖)
 				String[] dependsOn = mbd.getDependsOn();
 				if (dependsOn != null) {
 					for (String dep : dependsOn) {
+						//beanName是当前正在创建的bean dep是正在创建的bean的依赖的bean的名称
 						if (isDependent(beanName, dep)) {
 							throw new BeanCreationException(mbd.getResourceDescription(), beanName,
 									"Circular depends-on relationship between '" + beanName + "' and '" + dep + "'");
 						}
+						//保存的是被依赖的beanName 与依赖BeanName的集合 ：依赖BeanName--》beanName的集合
 						registerDependentBean(dep, beanName);
 						try {
+							//递归获取依赖
 							getBean(dep);
 						}
 						catch (NoSuchBeanDefinitionException ex) {
@@ -318,8 +333,10 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 				// Create bean instance.
 				if (mbd.isSingleton()) {
+					//单例走这个分支
 					sharedInstance = getSingleton(beanName, () -> {
 						try {
+							//创建bean
 							return createBean(beanName, mbd, args);
 						}
 						catch (BeansException ex) {
@@ -331,9 +348,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 						}
 					});
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
-				}
-
-				else if (mbd.isPrototype()) {
+				}else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
 					Object prototypeInstance = null;
 					try {
