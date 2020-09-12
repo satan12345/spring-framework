@@ -529,7 +529,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 * 为什么不能生成代理对象 不管是我们的jdk代理 还是cglib的代理都不会在此处进行代理
 			 * 因为我们真实的对象没有生成 所以在这里不会生成代理对象，那么在这一步是我们aop和事务的关键 因为
 			 * 在这里解析我们的aop切面信息进行缓存
-			 *
+			 *InstantiationAwareBeanPostProcessor
 			 */
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
@@ -595,6 +595,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {
 				try {
+					//对象创建完成后调用后置处理器
 					applyMergedBeanDefinitionPostProcessors(mbd, beanType, beanName);
 				} catch (Throwable ex) {
 					throw new BeanCreationException(mbd.getResourceDescription(), beanName, "Post-processing of merged bean definition failed", ex);
@@ -1212,7 +1213,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (instanceSupplier != null) {
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
-
+		//工厂方法不为空 使用工厂方法创建bean
 		if (mbd.getFactoryMethodName() != null) {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}

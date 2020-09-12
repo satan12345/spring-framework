@@ -57,14 +57,17 @@ final class PostProcessorRegistrationDelegate {
 			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
+		//将已经处理过的postProcess记录下来
 		Set<String> processedBeans = new HashSet<>();
 
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
+			//分别保存实现了 BeanFactoryPostProcessor 接口 与BeanDefinitionRegistryPostProcessor bean
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 
 			for (BeanFactoryPostProcessor postProcessor : beanFactoryPostProcessors) {
+				//对BeanFactoryPostProcessor 按照接口不通 进行不同的收集
 				if (postProcessor instanceof BeanDefinitionRegistryPostProcessor) {
 					BeanDefinitionRegistryPostProcessor registryProcessor =
 							(BeanDefinitionRegistryPostProcessor) postProcessor;
@@ -81,7 +84,7 @@ final class PostProcessorRegistrationDelegate {
 			// Separate between BeanDefinitionRegistryPostProcessors that implement
 			// PriorityOrdered, Ordered, and the rest.
 			List<BeanDefinitionRegistryPostProcessor> currentRegistryProcessors = new ArrayList<>();
-
+			//首先执行实现了PriorityOrdered 的BeanDefinitionRegistryPostProcessors
 			// First, invoke the BeanDefinitionRegistryPostProcessors that implement PriorityOrdered.
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
@@ -95,7 +98,7 @@ final class PostProcessorRegistrationDelegate {
 			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
-
+			//再执行实现了 Ordered接口的 BeanDefinitionRegistryPostProcessors
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
 			for (String ppName : postProcessorNames) {
@@ -108,7 +111,7 @@ final class PostProcessorRegistrationDelegate {
 			registryProcessors.addAll(currentRegistryProcessors);
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();
-
+			//最后 执行没有实现任何接口的 BeanDefinitionRegistryPostProcessors
 			// Finally, invoke all other BeanDefinitionRegistryPostProcessors until no further ones appear.
 			boolean reiterate = true;
 			while (reiterate) {
@@ -128,11 +131,15 @@ final class PostProcessorRegistrationDelegate {
 			}
 
 			// Now, invoke the postProcessBeanFactory callback of all processors handled so far.
+			/**执行postProcessBeanFactory 虽然postProcessor实现了BeanDefinitionRegistryPostProcessor这个接口 但是也是属于实现了
+			 * BeanFactoryPostProcessor 接口 所以也要执行
+			 */
 			invokeBeanFactoryPostProcessors(registryProcessors, beanFactory);
+			/**
+			 * 执行实现了postProcessBeanFactory  的postProcessor
+			 */
 			invokeBeanFactoryPostProcessors(regularPostProcessors, beanFactory);
-		}
-
-		else {
+		}else {
 			// Invoke factory processors registered with the context instance.
 			invokeBeanFactoryPostProcessors(beanFactoryPostProcessors, beanFactory);
 		}
