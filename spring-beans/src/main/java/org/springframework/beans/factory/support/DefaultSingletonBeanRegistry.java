@@ -193,7 +193,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		 */
 		Object singletonObject = this.singletonObjects.get(beanName);
 		/**
-		 * 若在一级缓存中没有获取到对象 并且SingletonCurrentlyInCreation 这个list包含该beanName
+		 * 若在一级缓存中没有获取到对象 并且SingletonCurrentlyInCreation 这个list包含该beanName,说明这个bean之前有过创建
+		 * 只是还没有完成
 		 * IOC容器初始化加载单例bean的时候 第一次进来的时候 该list一般返回为空 但是循环依赖的时候可以
 		 */
 		if (singletonObject == null && isSingletonCurrentlyInCreation(beanName)) {
@@ -205,9 +206,15 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				 */
 				singletonObject = this.earlySingletonObjects.get(beanName);
 				/**
-				 * 从二级缓存中找不到 并且是允许循环依赖的时候
+				 * 从二级缓存中找不到 并且是允许循环依赖的时候 allowEarlyReference为true （参数是上一个方法传递进来的true）
 				 * 从三级缓存中获取 此时三级缓存中已经存在 则从三级缓存中获取singletonFactory,
 				 * 然后获取早期对象 放到二级缓存中 并将beanName从三级缓存中移除
+				 * 为什么要用三级缓存？
+				 * 三级缓存的结构是Map<beanName,ObjectFactory>
+				 *     在调用ObjectFactory.getObject()方法
+				 *     由于三级缓存放置的时候是这样的：addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
+				 *     会触发这个getEarlyBeanReference 这个lambda表达式 这个方法会经过beanPostProcessor
+				 *     beanPostProcess 会执行： return wrapIfNecessary(bean, beanName, cacheKey); 则保证返回的是代理对象.
 				 */
 				if (singletonObject == null && allowEarlyReference) {
 
