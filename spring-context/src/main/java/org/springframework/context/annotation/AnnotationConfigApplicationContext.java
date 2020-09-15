@@ -70,8 +70,14 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		 * 		this.beanFactory = new DefaultListableBeanFactory();
 		 *        }
 		 */
-
+		/**
+		 * 初始化注解模式下的bean定义扫描器
+		 *
+		 */
 		this.reader = new AnnotatedBeanDefinitionReader(this);
+		/**
+		 * 初始化我们的classPath类型的bean定义扫描器
+		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 

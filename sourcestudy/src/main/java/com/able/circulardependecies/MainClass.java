@@ -3,6 +3,7 @@ package com.able.circulardependecies;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
+ * 测试循环依赖的问题
  * @param
  * @author jipeng
  * @date 2020-09-12 10:24

@@ -85,7 +85,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	/** 保存已经注册的单例对象beanName 以创建的先后排序*/
 	/** Set of registered singletons, containing the bean names in registration order. */
 	private final Set<String> registeredSingletons = new LinkedHashSet<>(256);
-
+	/**
+	 * 该集合用于缓存当前正在创建bean 的名称
+	 */
 	/** Names of beans that are currently in creation. */
 	private final Set<String> singletonsCurrentlyInCreation =
 			Collections.newSetFromMap(new ConcurrentHashMap<>(16));
