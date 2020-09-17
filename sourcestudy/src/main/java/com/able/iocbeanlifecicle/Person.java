@@ -2,6 +2,8 @@ package com.able.iocbeanlifecicle;
 
 import org.springframework.beans.factory.InitializingBean;
 
+import javax.annotation.PostConstruct;
+
 /**
  * @param
  * @author jipeng
@@ -13,6 +15,11 @@ public class Person implements InitializingBean {
 
 	public void initPerson(){
 		System.out.println("initPerson");
+	}
+
+	@PostConstruct
+	public void init(){
+		System.out.println("@PostConstruct");
 	}
 
 	public String getName() {

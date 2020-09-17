@@ -81,33 +81,52 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @see #isEligibleBean
 	 */
 	public List<Advisor> buildAspectJAdvisors() {
+		//aspectBeanNames 用于保存切面的名称，该地方aspectBeanNames 使我们类级别的缓存 用于缓存已经解析出来的bean名称
 		List<String> aspectNames = this.aspectBeanNames;
-
+		//做了dcl检查
 		if (aspectNames == null) {
+			//缓存字段aspectNames 没有值 表示实例化第一个单实例bean的时候就会触发解析切面的操作
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
 				if (aspectNames == null) {
+					//用于保存所有解析出来的Advisor对象
 					List<Advisor> advisors = new ArrayList<>();
+					//用于保存切面名称的集合
 					aspectNames = new ArrayList<>();
+					/**
+					 * aop功能中再这里传入的是Object对象，代表去容器中获取到所有的组件的名称 然后进过
+					 * 循环遍历 ，这个过程是十分消耗性能的 所以说Spring会在这里加入保存切面信息的缓存
+					 * 但是事务功能不一样，事务模块的功能是直接去容器中获取Advisor类型的 选择范围小，且不消耗性能，
+					 * 所以Spring在事务模块中没有加入缓存来保存我们的事务相关的Advisor
+					 */
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
+					//遍历IOC容器中的bean
 					for (String beanName : beanNames) {
 						if (!isEligibleBean(beanName)) {
 							continue;
 						}
+						//通过beanName获取Class对象
 						// We must be careful not to instantiate beans eagerly as in this case they
 						// would be cached by the Spring container but would not have been weaved.
 						Class<?> beanType = this.beanFactory.getType(beanName);
 						if (beanType == null) {
 							continue;
 						}
+						//根据class对象判断是不是切面
 						if (this.advisorFactory.isAspect(beanType)) {
+							//是切面类
+							//加入到缓存中
 							aspectNames.add(beanName);
+							//把beanName和beanType构造成一个AspectMetadata
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
+								//构建切面注解的实例工厂
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								//获取该切面的所有advisor增强
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
+								//加入到缓存
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);
 								}
@@ -115,8 +134,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 									this.aspectFactoryCache.put(beanName, factory);
 								}
 								advisors.addAll(classAdvisors);
-							}
-							else {
+							}else {
 								// Per target or per this.
 								if (this.beanFactory.isSingleton(beanName)) {
 									throw new IllegalArgumentException("Bean with name '" + beanName +

@@ -12,3 +12,35 @@ Spring IOC 控制反转 依赖注入
 ApplicationContext 与 BeanFactory(IOC容器)关系
 组合关系
 
+
+
+--AOP
+代理对象存放在哪里？
+    --单例缓存池中
+
+代理对象什么时候生成？
+
+我们的目标对象呢？
+
+
+给容器中注入组件:
+    1 .包扫描+组件标注注解(@Controller/@Service/@Repository/@Component)
+        局限性：只能用于自己写的类
+    2 @Bean [导入第三方组件]
+
+    3@Import[快速给容器中导入一个组件]
+        1 @Import( value = {Cat.class}):容器中就会自动注入这个组件
+        2 ImportSelector:实现该接口
+            @Import( value = {MyImportSelector.class})
+                public class MyImportSelector implements ImportSelector {
+            	@Override
+            	public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+            		// 返回要导入组件的全类名
+            		return new String[]{Cat.class.getName()};
+            	}
+            }
+        3 ImportBeanDefinitionRegistrar:实现该接口 导入自己的组件
+
+
+
+
