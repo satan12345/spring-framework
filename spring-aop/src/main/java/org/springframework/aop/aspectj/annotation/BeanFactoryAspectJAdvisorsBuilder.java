@@ -126,7 +126,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
 								//获取该切面的所有advisor增强
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
-								//加入到缓存
+								//加入到缓存 将asepectName--》classAdvisorsList
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);
 								}

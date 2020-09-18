@@ -13,8 +13,7 @@ import org.springframework.context.annotation.*;
  * 		导入了组件:AnnotationAwareAspectJAutoProxyCreator
  */
 //开启切面自动创建
-@EnableAspectJAutoProxy
-
+@EnableAspectJAutoProxy(exposeProxy = true)
 @Import(value = {MyImportBeanDefinitionRegistrar.class})
 public class MainConfig {
 

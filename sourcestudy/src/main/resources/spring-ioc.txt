@@ -42,5 +42,17 @@ ApplicationContext 与 BeanFactory(IOC容器)关系
         3 ImportBeanDefinitionRegistrar:实现该接口 导入自己的组件
 
 
+执行目标方法add的《前置通知》,入参[6, 2]
+执行add方法
+执行目标方法add的《返回通知》,入参[6, 2]
+执行目标方法add的《后置通知》,入参[6, 2]
+
+
+执行目标方法div的《前置通知》,入参[6, 0]
+执行div方法
+执行了<<异常通知>> ,抛出异常
+执行目标方法div的《后置通知》,入参[6, 0]
+
+
 
 
