@@ -1,0 +1,29 @@
+Shared libararies(共享库)/runtimes pluggability (运行时插件能力)
+1 Servlet 容器启动会扫描当前应用里面每一个jar包的javax.servlet.ServletContainerInitializer的实现
+2.javax.servlet.ServletContainerInitializer 的实现类必须绑定在META-INF/services/javax.servlet.ServletContainerInitializer这个文件中
+文件的内容指向这个接口的实现，文件的名称是接口的全类名
+
+总结：容器在启动的时候 会扫描当前应用的每一个jar包里面的这个META-INF/services/javax.servlet.ServletContainerInitializer文件中指定的
+实现类 启动并运行这个实现类的方法
+
+
+--spring
+WEB容器启动的时候 会扫描应用与每个jar包下的/META-INF/services/javax.servlet.ServletContainerInitializer文件中
+ServletContainerInitializer接口的实现类即：org.springframework.web.SpringServletContainerInitializer
+
+spring的应用一起动就会加载WebApplicationInitializer的子类创建对象
+    AbstractContextLoaderInitializer:创建根容器
+    AbstractDispatcherServletInitializer：创建子容器
+           createServletApplicationContext：创建web的ioc容器
+           createDispatcherServlet:创建一个DispatcherServlet
+           将创建的DispatcherServlet添加到ServletContext中
+
+    AbstractAnnotationConfigDispatcherServletInitializer:注解方式配置的DispatcherServlet初始化
+        createRootApplicationContext():创建根容器
+        createServletApplicationContext：创建webIOC容器
+
+总结：
+    以注解的方式来启动SpringMVC 继承 AbstractAnnotationConfigDispatcherServletInitializer
+    实现抽象方法指定DispatcherServlet配置信息
+
+

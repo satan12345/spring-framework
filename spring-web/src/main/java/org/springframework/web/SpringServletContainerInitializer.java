@@ -138,19 +138,28 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 	 * @see WebApplicationInitializer#onStartup(ServletContext)
 	 * @see AnnotationAwareOrderComparator
 	 */
+	/**
+	 * 方法实现说明：容器启动的时候会调用该方法 并且传入@HandlesTypes(WebApplicationInitializer.class)类型的
+	 * 所有子类作为入参
+	 * @param webAppInitializerClasses 感兴趣类的集合
+	 * @param servletContext 我们应用的上下文对象
+	 * @throws ServletException
+	 */
 	@Override
 	public void onStartup(@Nullable Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)
 			throws ServletException {
 
 		List<WebApplicationInitializer> initializers = new LinkedList<>();
-
+		//传入感兴趣类 WebApplicationInitializer的所有子类
 		if (webAppInitializerClasses != null) {
 			for (Class<?> waiClass : webAppInitializerClasses) {
 				// Be defensive: Some servlet containers provide us with invalid classes,
 				// no matter what @HandlesTypes says...
+				//判断感兴趣的类不是接口 不是抽象类 且是WebApplicationInitializer的实现类
 				if (!waiClass.isInterface() && !Modifier.isAbstract(waiClass.getModifiers()) &&
 						WebApplicationInitializer.class.isAssignableFrom(waiClass)) {
 					try {
+						//通过反射调用创建感兴趣类的实例 然后加入到初始化的集合中
 						initializers.add((WebApplicationInitializer)
 								ReflectionUtils.accessibleConstructor(waiClass).newInstance());
 					}
@@ -167,7 +176,9 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 		}
 
 		servletContext.log(initializers.size() + " Spring WebApplicationInitializers detected on classpath");
+		//如果我们的webApplicationInitializer的实现类 实现了order接口或者标注了@Order注解 会进行排序
 		AnnotationAwareOrderComparator.sort(initializers);
+		//依次循环调用我们的感兴趣的类的实例的onStartup方法
 		for (WebApplicationInitializer initializer : initializers) {
 			initializer.onStartup(servletContext);
 		}

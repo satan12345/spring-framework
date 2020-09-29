@@ -60,7 +60,9 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
+		//实例化我们的Spring root上下文
 		super.onStartup(servletContext);
+		//注册我们的DispatcherServlet 创建我们的Spring web上下文对象
 		registerDispatcherServlet(servletContext);
 	}
 
@@ -93,6 +95,7 @@ public abstract class AbstractDispatcherServletInitializer extends AbstractConte
 		}
 
 		registration.setLoadOnStartup(1);
+		//getServletMappings 属于抽象方法 用于让子类实现
 		registration.addMapping(getServletMappings());
 		registration.setAsyncSupported(isAsyncSupported());
 
