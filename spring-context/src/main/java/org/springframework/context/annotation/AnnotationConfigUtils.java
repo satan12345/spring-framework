@@ -160,6 +160,7 @@ public abstract class AnnotationConfigUtils {
 
 		Set<BeanDefinitionHolder> beanDefs = new LinkedHashSet<>(8);
 
+		//注册 ConfigurationClassPostProcessor（属于 BeanFactoryPostProcessor 会在bean工厂实例化之后调用） 用于解析配置类
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);

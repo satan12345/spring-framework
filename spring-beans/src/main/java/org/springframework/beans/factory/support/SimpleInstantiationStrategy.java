@@ -84,6 +84,7 @@ public class SimpleInstantiationStrategy implements InstantiationStrategy {
 					}
 				}
 			}
+			//通过构造器反射创建对象
 			return BeanUtils.instantiateClass(constructorToUse);
 		}
 		else {

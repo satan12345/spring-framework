@@ -72,7 +72,7 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		 */
 		/**
 		 * 初始化注解模式下的bean定义扫描器
-		 *
+		 * 完成了Spring内部BeanDefinition的注册
 		 */
 		this.reader = new AnnotatedBeanDefinitionReader(this);
 		/**

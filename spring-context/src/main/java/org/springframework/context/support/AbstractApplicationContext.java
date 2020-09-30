@@ -535,9 +535,14 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 		 :BeanDefinitionRegistryPostProcessor
 				 */
 
-				//调用我们的bean工厂的后置处理器
+				//调用我们的bean工厂的后置处理器 实例化bean工厂的后置处理器
 				// Invoke factory processors registered as beans in the context.
 				invokeBeanFactoryPostProcessors(beanFactory);
+
+
+
+
+
 				//注册bean的后置处理器 beanPostProcessor
 				/**
 				 * BeanPostProcessor
@@ -549,7 +554,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 */
 				// Register bean processors that intercept bean creation.
 				registerBeanPostProcessors(beanFactory);
-				//初始化MessageSource组件
+				//初始化MessageSource组件 初始化国际化资源处理器
 				// Initialize message source for this context.
 				initMessageSource();
 				//初始化事件派发器
@@ -866,6 +871,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 		// Initialize conversion service for this context.
+		//为我们的bean工厂创建转换器
 		if (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &&
 				beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) {
 			beanFactory.setConversionService(

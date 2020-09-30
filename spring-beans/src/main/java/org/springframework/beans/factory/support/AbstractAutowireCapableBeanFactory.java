@@ -526,7 +526,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		try {
-			/**
+			/**第一个bean的后置处理器
 			 * 通过bean的后置处理器来进行后置处理生成代理对象,一般情况下在此处不会生成代理对象
 			 * 为什么不能生成代理对象 不管是我们的jdk代理 还是cglib的代理都不会在此处进行代理
 			 * 因为我们真实的对象没有生成 所以在这里不会生成代理对象，那么在这一步是我们aop和事务的关键 因为
@@ -1179,8 +1179,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
+		//获取容器中所有的beanPostProcessor 遍历
 		for (BeanPostProcessor bp : getBeanPostProcessors()) {
+			//判断后置处理器是否实现了 InstantiationAwareBeanPostProcessor 接口
 			if (bp instanceof InstantiationAwareBeanPostProcessor) {
+				//如果实现 则将强转 并调用钩子方法
 				InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
 				Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
 				if (result != null) {
@@ -1253,7 +1256,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (ctors != null) {
 			return autowireConstructor(beanName, mbd, ctors, null);
 		}
-
+		//利用无参构造函数实例化bean
 		// No special handling: simply use no-arg constructor.
 		return instantiateBean(beanName, mbd);
 	}
@@ -1354,6 +1357,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 								getInstantiationStrategy().instantiate(mbd, beanName, parent),
 						getAccessControlContext());
 			} else {
+				//实例化bean
 				beanInstance = getInstantiationStrategy().instantiate(mbd, beanName, parent);
 			}
 			BeanWrapper bw = new BeanWrapperImpl(beanInstance);
@@ -1824,7 +1828,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				invokeAwareMethods(beanName, bean);
 				return null;
 			}, getAccessControlContext());
-		} else {
+		} else {//调用aware接口 BeanNameAware BeanClassLoaderAware BeanFactoryAware
 			invokeAwareMethods(beanName, bean);
 		}
 
@@ -1882,7 +1886,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected void invokeInitMethods(String beanName, final Object bean, @Nullable RootBeanDefinition mbd)
 			throws Throwable {
-
+			//bean 实现了 InitializingBean
 		boolean isInitializingBean = (bean instanceof InitializingBean);
 		if (isInitializingBean && (mbd == null || !mbd.isExternallyManagedInitMethod("afterPropertiesSet"))) {
 			if (logger.isTraceEnabled()) {
@@ -1903,6 +1907,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		if (mbd != null && bean.getClass() != NullBean.class) {
+			//bean自定义的initMethod
 			String initMethodName = mbd.getInitMethodName();
 			if (StringUtils.hasLength(initMethodName) &&
 					!(isInitializingBean && "afterPropertiesSet".equals(initMethodName)) &&

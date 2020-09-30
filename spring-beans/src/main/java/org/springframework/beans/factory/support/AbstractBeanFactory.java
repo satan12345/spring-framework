@@ -171,7 +171,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	/**保存已经创建的bean 将正在创建的bean的id添加进来 */
 	/** Names of beans that have already been created at least once. */
 	private final Set<String> alreadyCreated = Collections.newSetFromMap(new ConcurrentHashMap<>(256));
-
+	//当前的线程中创建的prototype类型的bean名称
 	/** Names of beans that are currently in creation. */
 	private final ThreadLocal<Object> prototypesCurrentlyInCreation =
 			new NamedThreadLocal<>("Prototype beans currently in creation");
@@ -262,7 +262,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}else {
 			//spring 只能解决单例对象的setter 注入的循环依赖 不能解决构造器注入的循环依赖
 
-
+			//判断当前线程中创建的bean是属于prototype模式的 则抛出异常
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			if (isPrototypeCurrentlyInCreation(beanName)) {
@@ -1719,19 +1719,24 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		return getTypeForFactoryBean(beanName, mbd, true).resolve();
 	}
 
-	/**
+	/** 把指定的bean标记为正在创建
 	 * Mark the specified bean as already created (or about to be created).
 	 * <p>This allows the bean factory to optimize its caching for repeated
 	 * creation of the specified bean.
 	 * @param beanName the name of the bean
 	 */
 	protected void markBeanAsCreated(String beanName) {
+		//没有创建
 		if (!this.alreadyCreated.contains(beanName)) {
+			//进行加锁
 			synchronized (this.mergedBeanDefinitions) {
+				//DCL双锁检查
 				if (!this.alreadyCreated.contains(beanName)) {
 					// Let the bean definition get re-merged now that we're actually creating
 					// the bean... just in case some of its metadata changed in the meantime.
+					//从mergeBeanDefinitions 中删除beanName,并在下次访问的时候重新创建它
 					clearMergedBeanDefinition(beanName);
+					//添加到已经创建的bean集合中
 					this.alreadyCreated.add(beanName);
 				}
 			}
