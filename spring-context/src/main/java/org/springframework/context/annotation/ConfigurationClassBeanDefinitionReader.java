@@ -136,10 +136,10 @@ class ConfigurationClassBeanDefinitionReader {
 			this.importRegistry.removeImportingClass(configClass.getMetadata().getClassName());
 			return;
 		}
-
+		//将通过@import注解导入的类 包装成bean定义 然后加入到IOC容器中
 		if (configClass.isImported()) {
 			registerBeanDefinitionForImportedConfigurationClass(configClass);
-		}
+		}//通过@Bean注解 导入bean定义到IOC容器中去
 		for (BeanMethod beanMethod : configClass.getBeanMethods()) {
 			loadBeanDefinitionsForBeanMethod(beanMethod);
 		}
@@ -210,7 +210,7 @@ class ConfigurationClassBeanDefinitionReader {
 			}
 			return;
 		}
-
+		//创建bean定义对象 用于保存从@Bean注解上获取的属性信息
 		ConfigurationClassBeanDefinition beanDef = new ConfigurationClassBeanDefinition(configClass, metadata);
 		beanDef.setSource(this.sourceExtractor.extractSource(metadata, configClass.getResource()));
 
@@ -282,7 +282,7 @@ class ConfigurationClassBeanDefinitionReader {
 		if (logger.isTraceEnabled()) {
 			logger.trace(String.format("Registering bean definition for @Bean method %s.%s()",
 					configClass.getMetadata().getClassName(), beanName));
-		}
+		}//注册bean定义信息到IOC容器中
 		this.registry.registerBeanDefinition(beanName, beanDefToRegister);
 	}
 

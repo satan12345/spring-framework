@@ -3,6 +3,7 @@ package com.able.iocbeanlifecicle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * @param
@@ -10,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2020-09-14 15:21
  */
 @Configuration
+@Import(value = {MyService.class})
 @ComponentScan(basePackages = "com.able.iocbeanlifecicle")
 public class MainConfig {
 

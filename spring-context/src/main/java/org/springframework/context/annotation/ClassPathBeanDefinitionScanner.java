@@ -158,13 +158,13 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 */
 	public ClassPathBeanDefinitionScanner(BeanDefinitionRegistry registry, boolean useDefaultFilters,
 			Environment environment, @Nullable ResourceLoader resourceLoader) {
-
+		//保存注册器
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		this.registry = registry;
-
+		//注册默认的filter 指定扫描策略
 		if (useDefaultFilters) {
 			registerDefaultFilters();
-		}
+		}//设置环境变量与资源加载器
 		setEnvironment(environment);
 		setResourceLoader(resourceLoader);
 	}
@@ -272,9 +272,9 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
-		for (String basePackage : basePackages) {
+		for (String basePackage : basePackages) {//循环包路径 并获取包路径下的组件bean定义集合
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
-			for (BeanDefinition candidate : candidates) {
+			for (BeanDefinition candidate : candidates) {//循环bean定义 设置一些属性后加入到bean工厂
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
