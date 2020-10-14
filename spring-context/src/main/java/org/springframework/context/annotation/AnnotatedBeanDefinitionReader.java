@@ -83,8 +83,10 @@ public class AnnotatedBeanDefinitionReader {
 	public AnnotatedBeanDefinitionReader(BeanDefinitionRegistry registry, Environment environment) {
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 		Assert.notNull(environment, "Environment must not be null");
-		this.registry = registry;//保存注册器
-		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);//解析计算condition的解析器
+		//保存注册器
+		this.registry = registry;
+		//解析计算condition的解析器
+		this.conditionEvaluator = new ConditionEvaluator(registry, environment, null);
 		//注册内部各种组件解析器
 		AnnotationConfigUtils.registerAnnotationConfigProcessors(this.registry);
 	}
@@ -283,6 +285,7 @@ public class AnnotatedBeanDefinitionReader {
 		//注册配置类到容器中去
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(abd, beanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
+		//把我们自己的配置类bean定义注册到IOC容器中去
 		BeanDefinitionReaderUtils.registerBeanDefinition(definitionHolder, this.registry);
 	}
 

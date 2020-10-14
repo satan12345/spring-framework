@@ -12,6 +12,7 @@ public class MainClass {
 	public static void main(String[] args){
 		//IOC容器创建
 		AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(MainConfig.class);
+
 		InstanceA instanceA= (InstanceA) ctx.getBean("instanceA");
 		System.out.println("instanceA = " + instanceA);
 		//InstanceB instanceB= (InstanceB) ctx.getBean("instanceB");

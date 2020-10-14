@@ -3,12 +3,14 @@ package com.able.circulardependecies;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.stereotype.Component;
 
 /**
  * @param
  * @author jipeng
  * @date 2020-09-12 10:24
  */
+@Component
 public class InstanceA implements MergedBeanDefinitionPostProcessor {
 	private InstanceB instanceB;
 	private String name;

@@ -535,7 +535,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 		 :BeanDefinitionRegistryPostProcessor
 				 */
 
-				//调用我们的bean工厂的后置处理器 实例化bean工厂的后置处理器
+
+				/**
+				 * 调用我们的bean工厂的后置处理器
+				 *   调用实现 BeanFactoryPostProcessor(带修改bean定义) BeanDefinitionRegistryPostProcessor(带注册bean定义) 这两个接口的bean定义
+				 * 1 会在此将class扫描成BeanDefinition
+				 * 2
+				 */
 				// Invoke factory processors registered as beans in the context.
 				invokeBeanFactoryPostProcessors(beanFactory);
 
@@ -726,6 +732,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		//执行所有的beanFactoryPostProcessors
+		/**
+		 * 获取两处存储的BeanFactoryPostProcessor的对象 供接下来的调用
+		 * 参数1 当前的bean工厂
+		 * 参数2:获取我们自己调用 ctx.addBeanFactoryPostProcessor() 方法保存的自定义的BeanFactoryPostProcessor
+		 */
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime

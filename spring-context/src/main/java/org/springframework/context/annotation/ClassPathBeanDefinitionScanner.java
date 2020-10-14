@@ -272,23 +272,31 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
-		for (String basePackage : basePackages) {//循环包路径 并获取包路径下的组件bean定义集合
+		//循环包路径 并获取包路径下的组件bean定义集合
+		for (String basePackage : basePackages) {
+			//找到包下所有的候选的beanDefinition
 			Set<BeanDefinition> candidates = findCandidateComponents(basePackage);
-			for (BeanDefinition candidate : candidates) {//循环bean定义 设置一些属性后加入到bean工厂
+			//循环bean定义 设置一些属性后加入到bean工厂
+			for (BeanDefinition candidate : candidates) {
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
 				candidate.setScope(scopeMetadata.getScopeName());
+				//设置beanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);
+				//设置bean定义的默认属性
 				if (candidate instanceof AbstractBeanDefinition) {
 					postProcessBeanDefinition((AbstractBeanDefinition) candidate, beanName);
 				}
+				//获取@Lazy @DependsOn等注解的数据设置到BeanDefinition中
 				if (candidate instanceof AnnotatedBeanDefinition) {
 					AnnotationConfigUtils.processCommonDefinitionAnnotations((AnnotatedBeanDefinition) candidate);
 				}
+				//将我们解析出来的组件bean定义注册到我们的IOC容器中（容器中没有才注册）
 				if (checkCandidate(beanName, candidate)) {
 					BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(candidate, beanName);
 					definitionHolder =
 							AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 					beanDefinitions.add(definitionHolder);
+					//注册
 					registerBeanDefinition(definitionHolder, this.registry);
 				}
 			}

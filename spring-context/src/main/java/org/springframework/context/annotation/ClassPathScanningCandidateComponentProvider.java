@@ -413,27 +413,36 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	}
 
 	private Set<BeanDefinition> scanCandidateComponents(String basePackage) {
+		//创建集合用于保存扫描到的BeanDefinition
 		Set<BeanDefinition> candidates = new LinkedHashSet<>();
-		try {//拼接指定包路径 并利用资源解析器将指定路径下.class文件 解析成资源文件
+		try {
+			//把我们的包路径转换为资源路径 com.able-->classpath*:com/able/circulardependecies/**/*.class
 			String packageSearchPath = ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX +
 					resolveBasePackage(basePackage) + '/' + this.resourcePattern;
+			//扫描指定包路径下的所有的.class文件
 			Resource[] resources = getResourcePatternResolver().getResources(packageSearchPath);
 			boolean traceEnabled = logger.isTraceEnabled();
 			boolean debugEnabled = logger.isDebugEnabled();
-			for (Resource resource : resources) {//循环资源文件
+			//循环资源文件
+			for (Resource resource : resources) {
 				if (traceEnabled) {
 					logger.trace("Scanning " + resource);
 				}
+				//判断资源文件是否可读
 				if (resource.isReadable()) {
-					try {//将资源文件转换成源文件读取器 然后判断是否是候选组件 是的话 将其封装成 ScannedGenericBeanDefinition 并加入集合中
+					try {
+						//将资源文件转换成源文件读取器 然后判断是否是候选组件 是的话 将其封装成 ScannedGenericBeanDefinition 并加入集合中
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
+						//是不是候选的组件（是否是排除的 是否需要进行包含的）
 						if (isCandidateComponent(metadataReader)) {
+							//将资源文件包装成ScannedGenericBeanDefinition
 							ScannedGenericBeanDefinition sbd = new ScannedGenericBeanDefinition(metadataReader);
 							sbd.setSource(resource);
 							if (isCandidateComponent(sbd)) {
 								if (debugEnabled) {
 									logger.debug("Identified candidate component class: " + resource);
 								}
+								//加入到集合中
 								candidates.add(sbd);
 							}
 							else {
@@ -523,6 +532,10 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 */
 	protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
 		AnnotationMetadata metadata = beanDefinition.getMetadata();
+		/**metadata.isIndependent() 是不是顶级类 嵌套类 静态内部类
+		 * metadata.isConcrete() 是不是非接口 非抽象类
+		 *(metadata.isAbstract() && metadata.hasAnnotatedMethods(Lookup.class.getName())) 如果是抽象类 则必须要有Lookup注解
+		 */
 		return (metadata.isIndependent() && (metadata.isConcrete() ||
 				(metadata.isAbstract() && metadata.hasAnnotatedMethods(Lookup.class.getName()))));
 	}
