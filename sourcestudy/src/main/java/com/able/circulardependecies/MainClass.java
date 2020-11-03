@@ -17,6 +17,7 @@ public class MainClass {
 		System.out.println("instanceA = " + instanceA);
 		//InstanceB instanceB= (InstanceB) ctx.getBean("instanceB");
 
+
 	}
 }
 

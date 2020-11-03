@@ -274,7 +274,6 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			 * 比如我们的Controller中注入Service的时候 泛型我们依赖的是一个引用对象 那么他就会调用getBean
 			 * 但是当前所在的容器是web子容器 那么就会在这里先去找父容器
 			 */
-
 			// Check if bean definition exists in this factory.
 			BeanFactory parentBeanFactory = getParentBeanFactory();
 			if (parentBeanFactory != null && !containsBeanDefinition(beanName)) {
@@ -301,7 +300,6 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			if (!typeCheckOnly) {
 				markBeanAsCreated(beanName);
 			}
-
 			try {
 				//获取RootBeanDefinition
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);

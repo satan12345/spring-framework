@@ -529,8 +529,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			/**第一个bean的后置处理器
 			 * 通过bean的后置处理器来进行后置处理生成代理对象,一般情况下在此处不会生成代理对象
 			 * 为什么不能生成代理对象 不管是我们的jdk代理 还是cglib的代理都不会在此处进行代理
-			 * 因为我们真实的对象没有生成 所以在这里不会生成代理对象，那么在这一步是我们aop和事务的关键 因为
-			 * 在这里解析我们的aop切面信息进行缓存
+			 * 因为我们真实的对象没有生成 所以在这里不会生成代理对象，
+			 * 那么在这一步是我们aop和事务的关键 因为在这里解析我们的aop切面信息进行缓存
 			 *InstantiationAwareBeanPostProcessor
 			 * 给后置处理器一个机会去返回代理对象
 			 */
@@ -615,7 +615,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
 		/**
-		 * 单例的&是否允许循环依赖（spring默认为true）& 判断是否正在创建的标记
+		 * 单例的&&是否允许循环依赖（spring默认为true）&& 判断是否正在创建的标记
 		 */
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences && isSingletonCurrentlyInCreation(beanName));
 		if (earlySingletonExposure) {
@@ -1458,7 +1458,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			pvs = newPvs;
 		}
 
-		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
+ 		boolean hasInstAwareBpps = hasInstantiationAwareBeanPostProcessors();
 		boolean needsDepCheck = (mbd.getDependencyCheck() != AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
 
 		PropertyDescriptor[] filteredPds = null;
@@ -1828,7 +1828,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				invokeAwareMethods(beanName, bean);
 				return null;
 			}, getAccessControlContext());
-		} else {//调用aware接口 BeanNameAware BeanClassLoaderAware BeanFactoryAware
+		} else {
+			//调用aware接口 BeanNameAware BeanClassLoaderAware BeanFactoryAware
 			invokeAwareMethods(beanName, bean);
 		}
 

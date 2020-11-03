@@ -106,6 +106,10 @@ final class PostProcessorRegistrationDelegate {
 			//把当前的添加到总的后置处理器中里面去
 			registryProcessors.addAll(currentRegistryProcessors);
 			//执行BeanDefinitionRegistryPostProcessors定义的后置处理器
+			/** https://www.processon.com/view/link/5f5075c763768959e2d109df
+			 * 在这里典型的beanDefinitionRegistryPostProcessor就是ConfigurationClassPostProcessor
+			 * 用于进行bean定义的加载 比如我们的包扫描 @Import 等等
+			 */
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();//清空集合
 			//从容器中获取BeanDefinitionRegistryPostProcessor类型的bean名称集合

@@ -89,6 +89,14 @@ public class AnnotationConfigApplicationContext extends GenericApplicationContex
 		 * spring在执行工程后置处理器 ConfigurationClassPostProcessor时 去扫描包时会new 一个classPathBeanDefinitionReader
 		 * 这里的scanner 仅仅是为了程序员可以手动调用annotationConfigApplicationContext对象的scan方法
 		 */
+		/**
+		 * 扫描器
+		 *
+		 *     会加载系统环境变量和资源读取器
+		 *     并且里面定义了扫描包的核心方法doScan().
+		 *     但是这里的scanner只用于applicationContext调用调度扫描包注册beanDefinition
+		 *     还有个非常重要的地方，new ClassPathBeanDefinitionScanner的时候会调用registerDefaultFilters();在里面注册扫描时过滤候选component的includeFilters
+		 */
 		this.scanner = new ClassPathBeanDefinitionScanner(this);
 	}
 

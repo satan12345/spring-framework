@@ -124,7 +124,7 @@ class ComponentScanAnnotationParser {
 		if (basePackages.isEmpty()) {
 			basePackages.add(ClassUtils.getPackageName(declaringClass));
 		}
-
+		//添加一个默认的排除类型
 		scanner.addExcludeFilter(new AbstractTypeHierarchyTraversingFilter(false, false) {
 			@Override
 			protected boolean matchClassName(String className) {
@@ -133,7 +133,7 @@ class ComponentScanAnnotationParser {
 		});
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
-
+	//策略模式 根据排除的属性 设置相对应的filter
 	private List<TypeFilter> typeFiltersFor(AnnotationAttributes filterAttributes) {
 		List<TypeFilter> typeFilters = new ArrayList<>();
 		FilterType filterType = filterAttributes.getEnum("type");

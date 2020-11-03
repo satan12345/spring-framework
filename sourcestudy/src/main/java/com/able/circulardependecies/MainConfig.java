@@ -10,8 +10,10 @@ import org.springframework.context.annotation.ImportResource;
  * @date 2020-09-12 10:24
  */
 @Configuration
-@ComponentScan(basePackages = {"com.able.circulardependecies"})
-@ImportResource(locations = {"beans.xml"})
+@ComponentScan(
+//		lazyInit = true,
+		basePackages = {"com.able.circulardependecies","com.able.beanpostprocessor"})
+//@ImportResource(locations = {"beans.xml"})
 public class MainConfig {
 }
 

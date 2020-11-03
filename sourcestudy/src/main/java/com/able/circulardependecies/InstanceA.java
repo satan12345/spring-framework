@@ -1,8 +1,6 @@
 package com.able.circulardependecies;
 
-import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.support.MergedBeanDefinitionPostProcessor;
-import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,46 +9,28 @@ import org.springframework.stereotype.Component;
  * @date 2020-09-12 10:24
  */
 @Component
-public class InstanceA implements MergedBeanDefinitionPostProcessor {
+public class InstanceA  {
+	private String msg;
+	@Autowired
 	private InstanceB instanceB;
-	private String name;
-
-	public InstanceB getInstanceB() {
-		return instanceB;
-	}
-
-	public void setInstanceB(InstanceB instanceB) {
-		this.instanceB = instanceB;
-	}
 
 
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
+//	public String getMsg() {
+//		return msg;
+//	}
+//
+//	public void setMsg(String msg) {
+//		this.msg = msg;
+//	}
 
 	@Override
-	public void postProcessMergedBeanDefinition(RootBeanDefinition beanDefinition, Class<?> beanType, String beanName) {
-
-	}
-
-	@Override
-	public void resetBeanDefinition(String beanName) {
-
-	}
-
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-		return null;
-	}
-
-	@Override
-	public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-		return null;
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("InstanceA{");
+		sb.append("msg='").append(msg).append('\'');
+		sb.append(", instanceB=").append(instanceB);
+		sb.append('}');
+		return sb.toString();
 	}
 }
 

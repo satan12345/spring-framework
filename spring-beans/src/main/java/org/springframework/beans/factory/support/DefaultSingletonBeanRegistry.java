@@ -164,7 +164,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 			if (!this.singletonObjects.containsKey(beanName)) {
 				//加入到三级缓存中 暴露早期对象用于解决循环依赖的问题
 				this.singletonFactories.put(beanName, singletonFactory);
-
+				//从二级缓存中移除
 				this.earlySingletonObjects.remove(beanName);
 				//添加到已经注册的bean集合
 				this.registeredSingletons.add(beanName);
@@ -193,7 +193,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		 * 第一步 我们尝试去一级缓存（单例缓存池中去获取对象  一般从该map中获取的对象是可以直接使用的）
 		 * IOC 容器初始化加载单实例bean的时候 第一次进来的时候 该map中一般返回null
 		 */
-		Object singletonObject = this.singletonObjects.get(beanName);
+  		Object singletonObject = this.singletonObjects.get(beanName);
 		/**
 		 * 若在一级缓存中没有获取到对象 并且SingletonCurrentlyInCreation 这个list包含该beanName,说明这个bean之前有过创建
 		 * 只是还没有完成
@@ -222,6 +222,11 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 
 					ObjectFactory<?> singletonFactory = this.singletonFactories.get(beanName);
 					if (singletonFactory != null) {
+						/**
+						 * 三级缓存中存在数据
+						 * 将三级缓存中的对象保存到二级缓存中
+						 * 然后删除三级缓存中的对象
+						 */
 						singletonObject = singletonFactory.getObject();
 						this.earlySingletonObjects.put(beanName, singletonObject);
 						this.singletonFactories.remove(beanName);
@@ -260,6 +265,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 				 * singletonsCurrentlyInCreation 会在这里吧beanName添加进来 若第二次循环依赖 构造器注入会抛出异常
 				 */
 				beforeSingletonCreation(beanName);
+				//标记位 对象创建成功之后设置为true
 				boolean newSingleton = false;
 				boolean recordSuppressedExceptions = (this.suppressedExceptions == null);
 				if (recordSuppressedExceptions) {
@@ -381,7 +387,10 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 		return this.singletonsCurrentlyInCreation.contains(beanName);
 	}
 
-	/**
+	/** 判断inCreationCheckExclusions 集合中是否包含，
+	 * 不包含则将beanName添加到singletonsCurrentlyInCreation 这个集合中
+	 * 添加失败 则返回false 取反为true  则说明singletonsCurrentlyInCreation 这个set中已经存在指定的 beanName 则抛出异常
+	 * 添加成功：则说明singletonsCurrentlyInCreation这个bean是第一次添加,这个方法即保存了bean名称也判断了是第一次添加
 	 * Callback before singleton creation.
 	 * <p>The default implementation register the singleton as currently in creation.
 	 * @param beanName the name of the singleton about to be created

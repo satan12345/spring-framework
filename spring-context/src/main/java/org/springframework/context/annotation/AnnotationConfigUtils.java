@@ -164,7 +164,7 @@ public abstract class AnnotationConfigUtils {
 		 * 名称叫：org.springframework.context.annotation.internalConfigurationAnnotationProcessor
 		 * 在把这个类中 会解析加了@Configuration的配置类 还会解析@ComponentScan @ComponentSans 注解扫描的包 以及解析@Import等注解
 		 */
-		//注册 ConfigurationClassPostProcessor（属于 BeanFactoryPostProcessor 会在bean工厂实例化之后调用） 用于解析配置类
+		//注册 ConfigurationClassPostProcessor（属于 BeanFactoryPostProcessor 会在bean工厂实例化之后调用） 用于后续解析我们配置类
 		if (!registry.containsBeanDefinition(CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME)) {
 			RootBeanDefinition def = new RootBeanDefinition(ConfigurationClassPostProcessor.class);
 			def.setSource(source);

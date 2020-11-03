@@ -516,16 +516,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	@Override
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
-			// Prepare this context for refreshing. 上下文对象刷新前的准备
+			// Prepare this context for refreshing.
+			// 1 上下文对象刷新前的准备
 			prepareRefresh();
 			//获取beanFactory
+			//2 告诉子类初始化beanFactory 不同工厂不同实现
 			// Tell the subclass to refresh the internal bean factory.
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 			//beanFactory的预处理
 			// Prepare the bean factory for use in this context.
+			//3 对bean工厂进行属性填充
 			prepareBeanFactory(beanFactory);
 
 			try {
+				//4 留给子类去实现该接口
 				//beanFactory准备工作处理完成后的后置处理工作  子类通过重写这个方法来在beanFactory创建并预准备后 做进一步的设置
 				// Allows post-processing of the bean factory in context subclasses.
 				postProcessBeanFactory(beanFactory);
@@ -547,9 +551,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 
 
-
-
-				//注册bean的后置处理器 beanPostProcessor
+				//6 注册我们bean的后置处理器 beanPostProcessor
 				/**
 				 * BeanPostProcessor
 				 * DestructionAwareBeanPostProcessor
@@ -560,6 +562,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 */
 				// Register bean processors that intercept bean creation.
 				registerBeanPostProcessors(beanFactory);
+				// 7 初始化国际资源处理器
 				//初始化MessageSource组件 初始化国际化资源处理器
 				// Initialize message source for this context.
 				initMessageSource();
@@ -572,7 +575,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				//获取监听器 并添加到派发器中
 				// Check for listener beans and register them.
 				registerListeners();
-				//初始化所有的剩余的非懒加载的单实例bean
+				//实例化所有的剩余的非懒加载的单实例bean
 				// Instantiate all remaining (non-lazy-init) singletons.
 				finishBeanFactoryInitialization(beanFactory);
 
@@ -733,7 +736,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
 		//执行所有的beanFactoryPostProcessors
 		/**
-		 * 获取两处存储的BeanFactoryPostProcessor的对象 供接下来的调用
+		 * 获取两处存储的 BeanFactoryPostProcessor 的对象 供接下来的调用
 		 * 参数1 当前的bean工厂
 		 * 参数2:获取我们自己调用 ctx.addBeanFactoryPostProcessor() 方法保存的自定义的BeanFactoryPostProcessor
 		 */
@@ -914,7 +917,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Stop using the temporary ClassLoader for type matching.
 		beanFactory.setTempClassLoader(null);
-
+		//冻结所有的bean定义 说明注册的bean定义将不被修改或者任何进一步的处理
 		// Allow for caching all bean definition metadata, not expecting further changes.
 		beanFactory.freezeConfiguration();
 		//初始化所有剩余的单实例bean

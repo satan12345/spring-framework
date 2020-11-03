@@ -110,7 +110,7 @@ public class GenericApplicationContext extends AbstractApplicationContext implem
 	 */
 	public GenericApplicationContext() {
 		/**
-		 * 调用父类的构造函数 为ApplicationContext 创建一个beanFactory
+		 *创建bean工厂
 		 */
 		this.beanFactory = new DefaultListableBeanFactory();
 	}

@@ -1,6 +1,9 @@
 package com.able.circulardependecies;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 /**
  * @param
@@ -9,6 +12,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class InstanceB {
+	@Autowired
 	private InstanceA instanceA;
 
 	public InstanceA getInstanceA() {

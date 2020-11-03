@@ -118,7 +118,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/** Map from dependency type to corresponding autowired value. */
 	private final Map<Class<?>, Object> resolvableDependencies = new ConcurrentHashMap<>(16);
-
+	/**
+	 * 用于保存所有的BeanDefinition信息（没有被merged）
+	 */
 	/** Map of bean definition objects, keyed by bean name. */
 	private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>(256);
 
@@ -130,7 +132,9 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 	/** Map of singleton-only bean names, keyed by dependency type. */
 	private final Map<Class<?>, String[]> singletonBeanNamesByType = new ConcurrentHashMap<>(64);
-
+	/**
+	 * 用于存储所有的beanDefinition名称的集合
+	 */
 	/** List of bean definition names, in registration order. */
 	private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
@@ -826,11 +830,12 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 
 		// Trigger initialization of all non-lazy singleton beans...
 		for (String beanName : beanNames) {
-			//合并我们的bean定义，转换为统一的RootBeanDefinition类型
+			//根据名称合并我们的bean定义，转换为统一的RootBeanDefinition类型（不同方式注册的beanDefinition 可能实现类不同 要转换成同一个的bean定义）
 			RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);
 			//BeanDefinition 不是抽象的 是单例的 不是懒加载的
 			if (!bd.isAbstract() && bd.isSingleton() && !bd.isLazyInit()) {
-				//判断bean是否实现了factoryBean接口
+				//判断bean是否实现了factoryBean接口 即是不是工厂bean
+				//factoryBean 是一个bean 用于生产其他的bean
 				if (isFactoryBean(beanName)) {
 					Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);
 					if (bean instanceof FactoryBean) {
@@ -898,7 +903,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 		//判断bean定义是否已经存在
 		BeanDefinition existingDefinition = this.beanDefinitionMap.get(beanName);
 		if (existingDefinition != null) {
-			if (!isAllowBeanDefinitionOverriding()) {
+			if (!isAllowBeanDefinitionOverriding()) {//是否设置了允许beanDefinition覆盖
 				throw new BeanDefinitionOverrideException(beanName, beanDefinition, existingDefinition);
 			}
 			else if (existingDefinition.getRole() < beanDefinition.getRole()) {
@@ -925,8 +930,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
 			}
 			//覆盖
 			this.beanDefinitionMap.put(beanName, beanDefinition);
-		}
-		else {
+		}else {
 			if (hasBeanCreationStarted()) {
 				// Cannot modify startup-time collection elements anymore (for stable iteration)
 				synchronized (this.beanDefinitionMap) {
