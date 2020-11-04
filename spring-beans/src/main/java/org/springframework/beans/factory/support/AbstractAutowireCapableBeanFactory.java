@@ -586,8 +586,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		if (instanceWrapper == null) {
 			//使用合适的实例化策略来创建新的实例：工厂方法 构造函数注入  简单初始化  该方法很复杂也很重要
-			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
+		instanceWrapper = createBeanInstance(beanName, mbd, args);
 		//从包装类中获取被包装的对象 也就是刚刚创建成功的bean 与对象的类型
 		final Object bean = instanceWrapper.getWrappedInstance();
 		Class<?> beanType = instanceWrapper.getWrappedClass();
@@ -1003,10 +1003,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 */
 	protected Object getEarlyBeanReference(String beanName, RootBeanDefinition mbd, Object bean) {
 		Object exposedObject = bean;
+		//判断容器中是否有InstantiationAwareBeanPostProcessors类型的后置处理器
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+			//获取所有的beanPostProcessor 进行遍历
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
+				//判断后置处理器是否实现了SmartInstantiationAwareBeanPostProcessor接口
 				if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
+					//进行强制转换
 					SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
+					//调用 SmartInstantiationAwareBeanPostProcessor的 getEarlyBeanReference
 					exposedObject = ibp.getEarlyBeanReference(exposedObject, beanName);
 				}
 			}
