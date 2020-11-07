@@ -248,6 +248,12 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	public Object getSingleton(String beanName, ObjectFactory<?> singletonFactory) {
 		Assert.notNull(beanName, "Bean name must not be null");
 		//加锁
+		/**
+		 * 为啥这里要从单例缓存池中再拿一次?因为在多线程下
+		 * 线程1：getBean(A)-->锁-->bean的生命周期-->addSingleton加入到一级缓存池，移除二三级缓存池-->锁释放
+		 * 线程2：getBean(A)-->getSingleton锁--------阻塞----------------------------------------->继续执行--
+		 * 》获取锁--》再次从一级缓存中先那一下 否则直接从二级缓存中获取 则没有三级缓存中获取 也没有
+		 */
 		synchronized (this.singletonObjects) {
 			//尝试从单例缓存池中获取对象
 			Object singletonObject = this.singletonObjects.get(beanName);

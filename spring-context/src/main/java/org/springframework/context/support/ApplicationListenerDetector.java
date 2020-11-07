@@ -71,6 +71,10 @@ class ApplicationListenerDetector implements DestructionAwareBeanPostProcessor, 
 
 	@Override
 	public Object postProcessAfterInitialization(Object bean, String beanName) {
+		/**
+		 * 在beanPostProcessor中再一次将事件监听器添加到集合中
+		 * 是为了防止懒加载原因 ，如果是懒加载则不会在初始化容器的时候创建 在后置处理器中不会处理到
+		 */
 		if (bean instanceof ApplicationListener) {
 			// potentially not detected as a listener by getBeanNamesForType retrieval
 			Boolean flag = this.singletonNames.get(beanName);
