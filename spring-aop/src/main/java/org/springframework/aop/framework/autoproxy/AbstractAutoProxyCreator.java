@@ -242,13 +242,21 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
+		//构建我们的缓存key
 		Object cacheKey = getCacheKey(beanClass, beanName);
-
+		//没有beanName获取 没有包含在 targetSourcedBeans这种
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
+			//被解析过 则直接返回
 			if (this.advisedBeans.containsKey(cacheKey)) {
 				return null;
 			}
+			/**
+			 * 注意看重写方法
+			 * 判断是不是基础bean(是不是切面类 通知 切入点等)
+			 * 判断是不是应该跳过 默认false (切面解析也是在其中)
+			 */
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
+
 				this.advisedBeans.put(cacheKey, Boolean.FALSE);
 				return null;
 			}
@@ -296,8 +304,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (bean != null) {
 			//获取缓存key
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
+			//之前循环依赖创建的动态代理 如果是现在的bean 就不在创建  并且移除
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				//找到合适的就会被代理
+				//该方法将返回动态代理实例
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
 		}
@@ -333,7 +343,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @return a proxy wrapping the bean, or the raw bean instance as-is
 	 */
 	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
-		//已经被处理过了
+		//已经被处理过了(解析切面时 targetSourcedBeans出现过 ) 就是自己实现创建动态代理逻辑
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
@@ -453,21 +463,24 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
-
+		//创建一个代理对象工厂
 		ProxyFactory proxyFactory = new ProxyFactory();
 		proxyFactory.copyFrom(this);
-
-		if (!proxyFactory.isProxyTargetClass()) {
+		//为proxyFactory设置创建jdk代理还是cglib代理
+		//如果设置了<aop:aspectj-autoproxy proxy-target-class="true"/> 不会进if 说明强制使用cglib
+		if (!proxyFactory.isProxyTargetClass()) {//内部设置的 配置类就会设置这个属性
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
 			}
 			else {
-				evaluateProxyInterfaces(beanClass, proxyFactory);
+				evaluateProxyInterfaces(beanClass, proxyFactory);//检查有没有接口
 			}
 		}
-
+		//把我们的specificInterceptors数组中的Advisor转化为数组形式的
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
+		//为我们的代理工厂加入通知其
 		proxyFactory.addAdvisors(advisors);
+		//设置targetSource对象
 		proxyFactory.setTargetSource(targetSource);
 		customizeProxyFactory(proxyFactory);
 

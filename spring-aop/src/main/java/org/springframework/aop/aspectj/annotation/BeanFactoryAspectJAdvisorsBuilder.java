@@ -85,7 +85,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 		List<String> aspectNames = this.aspectBeanNames;
 		//做了dcl检查
 		if (aspectNames == null) {
-			//缓存字段aspectNames 没有值 表示实例化第一个单实例bean的时候就会触发解析切面的操作
+			//缓存字段aspectNames 没有值 会在实例化第一个单实例bean的时候就会触发解析切面的操作
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
 				if (aspectNames == null) {

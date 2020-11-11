@@ -70,10 +70,16 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		if (advisorNames == null) {
 			// Do not initialize FactoryBeans here: We need to leave all regular beans
 			// uninitialized to let the auto-proxy creator apply to them!
+			/**
+			 * 从我们的容器中获取到实现了Advisor接口的实现类
+			 * 而我们的会晤直接@EnableTransactionManagement 导入了一个ProxyTransactionManagerment
+			 * 获取到名字保存到本类的属性变量cachedAdvisorBeanNames中
+			 */
 			advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 					this.beanFactory, Advisor.class, true, false);
 			this.cachedAdvisorBeanNames = advisorNames;
 		}
+		//若在容器中 没有找到 则返回一个空的集合
 		if (advisorNames.length == 0) {
 			return new ArrayList<>();
 		}

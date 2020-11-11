@@ -19,6 +19,7 @@ dependencies {
     compile(project(":spring-core"))
     compile(project(":spring-expression"))
     compile(project(":spring-web"))
+    compile(project(":spring-tx"))
 //    compile(project(":spring-aspects"))
     compile("org.aspectj:aspectjweaver")
     testCompile group: 'junit', name: 'junit', version: '4.12'

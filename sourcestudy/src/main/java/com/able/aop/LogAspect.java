@@ -3,6 +3,7 @@ package com.able.aop;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
+import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 
@@ -14,6 +15,7 @@ import java.util.Arrays;
  * @date 2020-09-16 18:40
  */
 @Aspect
+@Component
 public class LogAspect {
 
 	/**
@@ -23,6 +25,11 @@ public class LogAspect {
 	public void pointCut() {
 	}
 
+	/**
+	 * 通知：
+	 * 把通知增强到方法上的过程叫织入
+	 * @param joinPoint
+	 */
 	@Before("pointCut()")
 	public void methodBefore(JoinPoint joinPoint) {
 		String methodName = joinPoint.getSignature().getName();

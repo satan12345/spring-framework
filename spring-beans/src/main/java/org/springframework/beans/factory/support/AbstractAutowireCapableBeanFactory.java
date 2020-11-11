@@ -531,6 +531,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 * 为什么不能生成代理对象 不管是我们的jdk代理 还是cglib的代理都不会在此处进行代理
 			 * 因为我们真实的对象没有生成 所以在这里不会生成代理对象，
 			 * 那么在这一步是我们aop和事务的关键 因为在这里解析我们的aop切面信息进行缓存
+			 * 解析我们的aop切面信息进行缓存
 			 *InstantiationAwareBeanPostProcessor
 			 * 给后置处理器一个机会去返回代理对象
 			 */
@@ -1190,6 +1191,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			if (bp instanceof InstantiationAwareBeanPostProcessor) {
 				//如果实现 则将强转 并调用钩子方法
 				InstantiationAwareBeanPostProcessor ibp = (InstantiationAwareBeanPostProcessor) bp;
+				/**
+				 * 很重要
+				 * 我们的AOP的@EnableAspectJAutoProxy为我们的容器中导入了 AnnotationAwareAspectJAutoProxyCreator 这个组件
+				 * 我们的事务直接@EnableTransactionManagement 为我们的容器中导入
+				 * 都是事先了我们的BeanPostProcessor接口的 postProcessBeforeInstantiation
+				 * 进行后置处理进行切面处理
+				 */
 				Object result = ibp.postProcessBeforeInstantiation(beanClass, beanName);
 				if (result != null) {
 					return result;
