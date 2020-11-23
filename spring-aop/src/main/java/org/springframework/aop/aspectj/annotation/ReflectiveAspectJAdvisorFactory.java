@@ -78,6 +78,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 		// @AfterThrowing methods due to the fact that AspectJAfterAdvice.invoke(MethodInvocation)
 		// invokes proceed() in a `try` block and only invokes the @After advice method
 		// in a corresponding `finally` block.
+		//根据数据类型进行排序
 		Comparator<Method> adviceKindComparator = new ConvertingComparator<>(
 				new InstanceComparator<>(
 						Around.class, Before.class, After.class, AfterReturning.class, AfterThrowing.class),
@@ -163,7 +164,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 
 		return advisors;
 	}
-
+	//获取切面类上的方法 忽略掉切点
 	private List<Method> getAdvisorMethods(Class<?> aspectClass) {
 		final List<Method> methods = new ArrayList<>();
 		ReflectionUtils.doWithMethods(aspectClass, method -> {

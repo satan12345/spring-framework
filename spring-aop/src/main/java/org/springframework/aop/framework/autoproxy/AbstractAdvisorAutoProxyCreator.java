@@ -99,9 +99,11 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 		List<Advisor> candidateAdvisors = findCandidateAdvisors();
 		//判断我们的通知能不能作用到当前类上（切点是否命中当前bean）
 		List<Advisor> eligibleAdvisors = findAdvisorsThatCanApply(candidateAdvisors, beanClass, beanName);
-		extendAdvisors(eligibleAdvisors);//增加了一个Advisor
+		//增加了一个Advisor
+		extendAdvisors(eligibleAdvisors);
 		if (!eligibleAdvisors.isEmpty()) {
-			eligibleAdvisors = sortAdvisors(eligibleAdvisors);//对我们的Advisors排序
+			//对我们的Advisors排序
+			eligibleAdvisors = sortAdvisors(eligibleAdvisors);
 		}
 		return eligibleAdvisors;
 	}
@@ -129,6 +131,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
+			//找出当前bean可以使用的advisor
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

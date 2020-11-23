@@ -223,7 +223,8 @@ public abstract class AopUtils {
 	 */
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
-		if (!pc.getClassFilter().matches(targetClass)) {//进行类级别过滤（通过AspectJ） 初筛
+		//进行类级别过滤（通过AspectJ） 初筛
+		if (!pc.getClassFilter().matches(targetClass)) {
 			return false;
 		}
 		//进行方法级别过滤
@@ -331,7 +332,7 @@ public abstract class AopUtils {
 		//不为空
 		boolean hasIntroductions = !eligibleAdvisors.isEmpty();
 		for (Advisor candidate : candidateAdvisors) {
-			//判断我们的增强器对象是不是试下了 IntroductionAdvisor(很明显我们事务没有实现 所以不会进入)
+			//判断我们的增强器对象是不是实现了 IntroductionAdvisor(很明显我们事务没有实现 所以不会进入)
 			if (candidate instanceof IntroductionAdvisor) {
 				// already processed 在上面已经处理过了 不需要处理
 				continue;

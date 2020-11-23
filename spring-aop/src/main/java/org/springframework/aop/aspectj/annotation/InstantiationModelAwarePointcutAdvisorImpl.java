@@ -89,11 +89,16 @@ final class InstantiationModelAwarePointcutAdvisorImpl
 		this.declaringClass = aspectJAdviceMethod.getDeclaringClass();
 		//切面的方法名
 		this.methodName = aspectJAdviceMethod.getName();
+		//切面方法的参数类型
 		this.parameterTypes = aspectJAdviceMethod.getParameterTypes();
+		//aspectJ通知工厂
 		this.aspectJAdviceMethod = aspectJAdviceMethod;
 		this.aspectJAdvisorFactory = aspectJAdvisorFactory;
+		//aspect的实例工厂
 		this.aspectInstanceFactory = aspectInstanceFactory;
+		//advisor的顺序
 		this.declarationOrder = declarationOrder;
+		//切面的名称
 		this.aspectName = aspectName;
 
 		if (aspectInstanceFactory.getAspectMetadata().isLazilyInstantiated()) {

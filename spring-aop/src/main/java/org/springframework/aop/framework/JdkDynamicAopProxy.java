@@ -120,7 +120,8 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 		}
 		Class<?>[] proxiedInterfaces = AopProxyUtils.completeProxiedInterfaces(this.advised, true);
 		findDefinedEqualsAndHashCodeMethods(proxiedInterfaces);
-		return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);//创建jdk动态代理
+		//创建jdk动态代理
+		return Proxy.newProxyInstance(classLoader, proxiedInterfaces, this);
 	}
 
 	/**
@@ -195,7 +196,7 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			target = targetSource.getTarget();
 			Class<?> targetClass = (target != null ? target.getClass() : null);
 			//把我们的代理对象转化成拦截器链 通过责任链模式 依次调用
-			// Get the interception chain for this method.
+			// Get the interception chain for this method. 将advisor转换为interceptor调用链
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 			//责任链列表为空 则直接调用目标方法
 			// Check whether we have any advice. If we don't, we can fallback on direct

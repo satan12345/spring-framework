@@ -73,7 +73,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	}
 
 
-	/**
+	/** 解析切面类
 	 * Look for AspectJ-annotated aspect beans in the current bean factory,
 	 * and return to a list of Spring AOP Advisors representing them.
 	 * <p>Creates a Spring Advisor for each AspectJ advice method.
@@ -93,7 +93,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 					List<Advisor> advisors = new ArrayList<>();
 					//用于保存切面名称的集合
 					aspectNames = new ArrayList<>();
-					/**
+					/** 拿到所有的bean名称
 					 * aop功能中再这里传入的是Object对象，代表去容器中获取到所有的组件的名称 然后进过
 					 * 循环遍历 ，这个过程是十分消耗性能的 所以说Spring会在这里加入保存切面信息的缓存
 					 * 但是事务功能不一样，事务模块的功能是直接去容器中获取Advisor类型的 选择范围小，且不消耗性能，
@@ -116,21 +116,20 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						//根据class对象判断是不是切面
 						if (this.advisorFactory.isAspect(beanType)) {
 							//是切面类
-							//加入到缓存中
+							//加入到缓存中 保存切面的名称
 							aspectNames.add(beanName);
-							//把beanName和beanType构造成一个AspectMetadata
+							//把beanName和beanType构造成一个AspectMetadata 切面元数据
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
 								//构建切面注解的实例工厂
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
-								//获取该切面的所有advisor增强
+								//获取该切面的所有通知 并封装成advisor增强
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
 								//加入到缓存 将asepectName--》classAdvisorsList
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);
-								}
-								else {
+								}else {
 									this.aspectFactoryCache.put(beanName, factory);
 								}
 								advisors.addAll(classAdvisors);

@@ -90,7 +90,7 @@ public final class ExposeInvocationInterceptor implements MethodInterceptor, Pri
 	@Override
 	public Object invoke(MethodInvocation mi) throws Throwable {
 		MethodInvocation oldInvocation = invocation.get();
-		invocation.set(mi);//记录当前正在执行的拦截器
+		invocation.set(mi);//记录当前正在执行的拦截器 该拦截器将很多信息暴露到当前线程中 供后续使用
 		try {
 			return mi.proceed();
 		}

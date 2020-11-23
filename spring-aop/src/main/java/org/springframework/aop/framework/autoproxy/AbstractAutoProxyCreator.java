@@ -244,7 +244,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
 		//构建我们的缓存key
 		Object cacheKey = getCacheKey(beanClass, beanName);
-		//没有beanName获取 没有包含在 targetSourcedBeans这种
+		//没有beanName获取 没有包含在 targetSourcedBeans中（一般都不会包含）
 		if (!StringUtils.hasLength(beanName) || !this.targetSourcedBeans.contains(beanName)) {
 			//被解析过 则直接返回
 			if (this.advisedBeans.containsKey(cacheKey)) {
@@ -252,8 +252,8 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			}
 			/**
 			 * 注意看重写方法
-			 * 判断是不是基础bean(是不是切面类 通知 切入点等)
-			 * 判断是不是应该跳过 默认false (切面解析也是在其中)
+			 * 前一个判断是不是基础bean(是不是切面类 通知 切入点等)
+			 * 第二个判断是不是应该跳过 默认false (切面解析也是在其中)
 			 */
 			if (isInfrastructureClass(beanClass) || shouldSkip(beanClass, beanName)) {
 
@@ -356,7 +356,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
 		}
-		//如果我们有通知的话 就创建代理对象
+		//如果我们有通知的话 就创建代理对象 根据当前的bean找到Advices和Advisors
 		// Create proxy if we have advice.
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {

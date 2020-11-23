@@ -58,6 +58,7 @@ public abstract class AopConfigUtils {
 
 	static {
 		// Set up the escalation list...
+		//索引代表优先级  0 事务  2 AOP
 		APC_PRIORITY_LIST.add(InfrastructureAdvisorAutoProxyCreator.class);
 		APC_PRIORITY_LIST.add(AspectJAwareAdvisorAutoProxyCreator.class);
 		APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class);
@@ -72,7 +73,7 @@ public abstract class AopConfigUtils {
 	@Nullable
 	public static BeanDefinition registerAutoProxyCreatorIfNecessary(
 			BeanDefinitionRegistry registry, @Nullable Object source) {
-
+		//注册组件 InfrastructureAdvisorAutoProxyCreator
 		return registerOrEscalateApcAsRequired(InfrastructureAdvisorAutoProxyCreator.class, registry, source);
 	}
 
@@ -119,9 +120,11 @@ public abstract class AopConfigUtils {
 			Class<?> cls, BeanDefinitionRegistry registry, @Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
-
+		//因为事务和aop都是样的名字 所以会根据内部维护的优先级覆盖beanClass
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
+			//如果已经存在了同名的bean定义 判断class的全类名是否相同 不同 则获取各自的优先级进行比较
+			//哪个优先级更大 用哪个的全类名 aop会覆盖事务的
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);

@@ -238,6 +238,7 @@ public class AspectJExpressionPointcut extends AbstractExpressionPointcut
 	 * Initialize the underlying AspectJ pointcut parser.
 	 */
 	private PointcutParser initializePointcutParser(@Nullable ClassLoader classLoader) {
+		//获取切点表达式
 		PointcutParser parser = PointcutParser
 				.getPointcutParserSupportingSpecifiedPrimitivesAndUsingSpecifiedClassLoaderForResolution(
 						SUPPORTED_PRIMITIVES, classLoader);
@@ -279,6 +280,7 @@ public class AspectJExpressionPointcut extends AbstractExpressionPointcut
 				// Actually this is still a "maybe" - treat the pointcut as dynamic if we don't know enough yet
 				PointcutExpression fallbackExpression = getFallbackPointcutExpression(targetClass);
 				if (fallbackExpression != null) {
+					//初筛
 					return fallbackExpression.couldMatchJoinPointsInType(targetClass);
 				}
 			}
