@@ -256,18 +256,21 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		Connection con = null;
 
 		try {
+			//判断事务对象有没有数据库连接持有期
 			if (!txObject.hasConnectionHolder() ||
 					txObject.getConnectionHolder().isSynchronizedWithTransaction()) {
+				//通过数据源获取一个数据库连接对象
 				Connection newCon = obtainDataSource().getConnection();
 				if (logger.isDebugEnabled()) {
 					logger.debug("Acquired Connection [" + newCon + "] for JDBC transaction");
 				}
+				//把我们的数据库连接包装成一个个ConnectionHolder对象 然后设置到我们的txObject对象里去
 				txObject.setConnectionHolder(new ConnectionHolder(newCon), true);
 			}
-
+			//标记链接是一个同步事务
 			txObject.getConnectionHolder().setSynchronizedWithTransaction(true);
 			con = txObject.getConnectionHolder().getConnection();
-
+			//设置isReadOnly 隔离级别
 			Integer previousIsolationLevel = DataSourceUtils.prepareConnectionForTransaction(con, definition);
 			txObject.setPreviousIsolationLevel(previousIsolationLevel);
 			txObject.setReadOnly(definition.isReadOnly());
@@ -275,22 +278,26 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			// Switch to manual commit if necessary. This is very expensive in some JDBC drivers,
 			// so we don't want to do it unnecessarily (for example if we've explicitly
 			// configured the connection pool to set it already).
+			//setAutoCommit 默认值为true  即每条sql语句在各自的一个事务中执行
 			if (con.getAutoCommit()) {
+				//标识  当回滚 条件后需要恢复AutoCommit=true
 				txObject.setMustRestoreAutoCommit(true);
 				if (logger.isDebugEnabled()) {
 					logger.debug("Switching JDBC Connection [" + con + "] to manual commit");
 				}
+				//设置不自动提交 即开启事务
 				con.setAutoCommit(false);
 			}
-
+			//判断事务为只读事务
 			prepareTransactionalConnection(con, definition);
+			//设置事务为激活状态
 			txObject.getConnectionHolder().setTransactionActive(true);
-
+			//设置事务超时时间
 			int timeout = determineTimeout(definition);
 			if (timeout != TransactionDefinition.TIMEOUT_DEFAULT) {
 				txObject.getConnectionHolder().setTimeoutInSeconds(timeout);
 			}
-
+			//绑定连接器到当前线程中
 			// Bind the connection holder to the thread.
 			if (txObject.isNewConnectionHolder()) {
 				TransactionSynchronizationManager.bindResource(obtainDataSource(), txObject.getConnectionHolder());
@@ -325,7 +332,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 		if (status.isDebug()) {
 			logger.debug("Committing JDBC transaction on Connection [" + con + "]");
 		}
-		try {
+		try {//提交事务
 			con.commit();
 		}
 		catch (SQLException ex) {
@@ -341,6 +348,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 			logger.debug("Rolling back JDBC transaction on Connection [" + con + "]");
 		}
 		try {
+			//回滚事务
 			con.rollback();
 		}
 		catch (SQLException ex) {

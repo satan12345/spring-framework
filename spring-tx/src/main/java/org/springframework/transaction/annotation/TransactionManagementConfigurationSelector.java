@@ -46,10 +46,11 @@ public class TransactionManagementConfigurationSelector extends AdviceModeImport
 	@Override
 	protected String[] selectImports(AdviceMode adviceMode) {
 		/**
-		 * 为我们的容器导入了两个组件 一个是AutoProxyRegistrar
+		 * 为我们的容器导入了两个组件 一个是AutoProxyRegistrar :注册一个bean的后置处理器
 		 * 一个是ProxyTransactionManagementConfiguration
 		 */
 		switch (adviceMode) {
+			//默认是PROXY
 			case PROXY:
 				return new String[] {AutoProxyRegistrar.class.getName(),
 						ProxyTransactionManagementConfiguration.class.getName()};

@@ -444,6 +444,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		Object result = existingBean;
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
 			//AnnotationAwareAspectJAutoProxyCreator
+			/**
+			 * 在这里是后置处理器的 第九次调用 aop和事务都会在这里生成代理对象
+			 * 【很重要】
+			 * 我们的AOP @enableAspectJautoProxy 为我们容器中导入了AnnotationAwareAspectJAutoProxyCreator
+			 * 我们的事务注解@EnableTransactionManagement我们我的容器导入了InfrastructureAdvisorAutoProxyCreator
+			 * 都是实现了我们的BeanPostProcessor InstantiationAwareBeanPostProcessor 接口
+			 * 在这里实现的是BeanPostProcessor接口的 postProcessAfterInitialization来生成我们的代理
+			 */
 			Object current = processor.postProcessAfterInitialization(result, beanName);
 			if (current == null) {
 				return result;
@@ -639,7 +647,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Initialize the bean instance.
 		Object exposedObject = bean;
 		try {
-			//装配bean 给我们的属性进行赋值（调用set方法进行赋值）
+			//装配bean 属性赋值   给我们的属性进行赋值（调用set方法进行赋值）
 			populateBean(beanName, mbd, instanceWrapper);
 			//进行对象初始化操作（在这里可能生成代理对象）
 			exposedObject = initializeBean(beanName, exposedObject, mbd);

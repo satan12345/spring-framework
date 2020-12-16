@@ -128,10 +128,10 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	 */
 	protected List<Advisor> findAdvisorsThatCanApply(
 			List<Advisor> candidateAdvisors, Class<?> beanClass, String beanName) {
-
+		//用来记录挡墙正在创建的被代理对象的名称
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
-			//找出当前bean可以使用的advisor
+			//找出当前bean可以使用的advisor 从候选的通知中找到当前bean关联的Advisors
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {

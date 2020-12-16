@@ -40,9 +40,13 @@ import org.springframework.util.ObjectUtils;
 public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
-
+	/**
+	 * 包含要执行的handler 即 controller
+	 */
 	private final Object handler;
-
+	/**
+	 * 拦截器
+	 */
 	@Nullable
 	private HandlerInterceptor[] interceptors;
 

@@ -1,6 +1,9 @@
 package com.able.aop;
 
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.Import;
 
 /**
  * @param
@@ -15,6 +18,7 @@ import org.springframework.context.annotation.*;
 //开启切面自动创建
 @EnableAspectJAutoProxy(exposeProxy = true)
 @Import(value = {MyImportBeanDefinitionRegistrar.class})
+
 public class MainConfig {
 
 	@Bean

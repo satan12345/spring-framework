@@ -554,7 +554,7 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 							this.options.getFileExtensions());
 
 			ContentNegotiationManager manager = this.options.getContentNegotiationManager();
-
+			//根据属性初始化对象 每个属性都可能存在多个值的情况 需要去重封装为一个对象
 			return new RequestMappingInfo(this.mappingName, patternsCondition,
 					ObjectUtils.isEmpty(this.methods) ?
 							null : new RequestMethodsRequestCondition(this.methods),

@@ -96,13 +96,16 @@ public class HandlerMethod {
 	 * Create an instance from a bean instance and a method.
 	 */
 	public HandlerMethod(Object bean, Method method) {
+		//参数判断
 		Assert.notNull(bean, "Bean is required");
 		Assert.notNull(method, "Method is required");
 		this.bean = bean;
 		this.beanFactory = null;
 		this.beanType = ClassUtils.getUserClass(bean);
 		this.method = method;
+		//得到桥接方法（我们可能处理的方法为泛型方法 泛型方法在编译为.class文件的时候 会生成一个对应的bridgeMethod）
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
+		//初始化参数列表
 		this.parameters = initMethodParameters();
 		evaluateResponseStatus();
 		this.description = initDescription(this.beanType, this.method);
@@ -183,10 +186,17 @@ public class HandlerMethod {
 		this.description = handlerMethod.description;
 	}
 
+	/**
+	 * 初始化方法参数列表
+	 * @return
+	 */
 	private MethodParameter[] initMethodParameters() {
+		//获取方法参数个数
 		int count = this.bridgedMethod.getParameterCount();
+		//构建方法参数数组
 		MethodParameter[] result = new MethodParameter[count];
 		for (int i = 0; i < count; i++) {
+			//创建
 			result[i] = new HandlerMethodParameter(i);
 		}
 		return result;

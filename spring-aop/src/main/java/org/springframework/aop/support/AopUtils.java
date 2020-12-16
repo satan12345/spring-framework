@@ -133,6 +133,12 @@ public abstract class AopUtils {
 			return method;
 		}
 		Method methodToUse = MethodIntrospector.selectInvocableMethod(method, targetType);
+		/**
+		 * 方法私有的
+		 * 非静态的
+		 * 是spring代理
+		 * 则抛出异常
+		 */
 		if (Modifier.isPrivate(methodToUse.getModifiers()) && !Modifier.isStatic(methodToUse.getModifiers()) &&
 				SpringProxy.class.isAssignableFrom(targetType)) {
 			throw new IllegalStateException(String.format(
@@ -140,6 +146,7 @@ public abstract class AopUtils {
 					"be delegated to target bean. Switch its visibility to package or protected.",
 					method.getName(), method.getDeclaringClass().getSimpleName()));
 		}
+
 		return methodToUse;
 	}
 
@@ -357,7 +364,7 @@ public abstract class AopUtils {
 	@Nullable
 	public static Object invokeJoinpointUsingReflection(@Nullable Object target, Method method, Object[] args)
 			throws Throwable {
-
+		//利用反射去调用目标方法
 		// Use reflection to invoke the method.
 		try {
 			ReflectionUtils.makeAccessible(method);

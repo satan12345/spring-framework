@@ -99,7 +99,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 	@Nullable
 	private HandlerMethodMappingNamingStrategy<T> namingStrategy;
-
+	//映射注册对象
 	private final MappingRegistry mappingRegistry = new MappingRegistry();
 
 
@@ -202,6 +202,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 */
 	@Override
 	public void afterPropertiesSet() {
+		//初始化处理方法
 		initHandlerMethods();
 	}
 
@@ -212,8 +213,13 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	 * @see #handlerMethodsInitialized
 	 */
 	protected void initHandlerMethods() {
+		/**
+		 * 获取Spring容器中所有的bean名称
+		 * 判断bean名称是否以scopedTarget.开始
+		 */
 		for (String beanName : getCandidateBeanNames()) {
 			if (!beanName.startsWith(SCOPED_TARGET_NAME_PREFIX)) {
+				//循环处理被筛选处理的候选bean
 				processCandidateBean(beanName);
 			}
 		}
@@ -246,6 +252,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	protected void processCandidateBean(String beanName) {
 		Class<?> beanType = null;
 		try {
+			//根据bean名称获取对应的类类型
 			beanType = obtainApplicationContext().getType(beanName);
 		}
 		catch (Throwable ex) {
@@ -254,25 +261,32 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				logger.trace("Could not resolve type for bean '" + beanName + "'", ex);
 			}
 		}
+		//bean的class类型不为空 且是处理器类
 		if (beanType != null && isHandler(beanType)) {
+			//对筛选处理的handler 即controller进行处理
 			detectHandlerMethods(beanName);
 		}
 	}
 
-	/**
+	/** 在指定的Handler中即Controller查找处理器方法
 	 * Look for handler methods in the specified handler bean.
 	 * @param handler either a bean name or an actual handler instance
 	 * @see #getMappingForMethod
+	 * 检测handlerMethods
 	 */
 	protected void detectHandlerMethods(Object handler) {
+		//获取handler的Class类型
 		Class<?> handlerType = (handler instanceof String ?
 				obtainApplicationContext().getType((String) handler) : handler.getClass());
 
 		if (handlerType != null) {
+			//获取真实的类类型(防止是代理类)
 			Class<?> userType = ClassUtils.getUserClass(handlerType);
+			//对象真实类型中所有方法进行解析和处理
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
 						try {
+							//获取方法的映射
 							return getMappingForMethod(method, userType);
 						}
 						catch (Throwable ex) {
@@ -283,8 +297,12 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			if (logger.isTraceEnabled()) {
 				logger.trace(formatMappings(userType, methods));
 			}
+
+			//遍历map
 			methods.forEach((method, mapping) -> {
+				//找到Controller中 可执行的方法 不能私有的 不能 SpringProxy
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
+				//把方法进行注册
 				registerHandlerMethod(handler, invocableMethod, mapping);
 			});
 		}
@@ -589,6 +607,14 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			this.readWriteLock.readLock().unlock();
 		}
 
+		/**
+		 *
+		 * @param mapping 方法上的@RequestMapping注解对象
+		 * @param handler 方法所在的Controller类
+		 * @param method 方法
+		 *    完成RequestMappingInfo与对应的HandlerMethod对象绑定
+		 *               完成请求urls路径与RequestMappingInfo绑定
+		 */
 		public void register(T mapping, Object handler, Method method) {
 			// Assert that the handler method is not a suspending one.
 			if (KotlinDetector.isKotlinType(method.getDeclaringClass())) {
@@ -597,14 +623,20 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 					throw new IllegalStateException("Unsupported suspending handler method detected: " + method);
 				}
 			}
+			//添加写锁
 			this.readWriteLock.writeLock().lock();
 			try {
+				//创建HandlerMethod
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
+				//验证映射
 				validateMethodMapping(handlerMethod, mapping);
+				//将mapping->HandlerMethod放入map中
 				this.mappingLookup.put(mapping, handlerMethod);
-
+				//提取Mapping中所有的url地址
 				List<String> directUrls = getDirectUrls(mapping);
+
 				for (String url : directUrls) {
+					//将url与Mapping对象进行绑定
 					this.urlLookup.add(url, mapping);
 				}
 
@@ -628,6 +660,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 		private void validateMethodMapping(HandlerMethod handlerMethod, T mapping) {
 			// Assert that the supplied mapping is unique.
+			//确保handlerMapping是唯一的
 			HandlerMethod existingHandlerMethod = this.mappingLookup.get(mapping);
 			if (existingHandlerMethod != null && !existingHandlerMethod.equals(handlerMethod)) {
 				throw new IllegalStateException(

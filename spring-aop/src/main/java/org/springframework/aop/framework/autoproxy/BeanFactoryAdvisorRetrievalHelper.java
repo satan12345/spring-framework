@@ -83,17 +83,17 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		if (advisorNames.length == 0) {
 			return new ArrayList<>();
 		}
-
+		//ioc容器中找到了我们配置的BeanFactoryTransactionAttributeSourceAdvisor
 		List<Advisor> advisors = new ArrayList<>();
 		for (String name : advisorNames) {
-			if (isEligibleBean(name)) {
-				if (this.beanFactory.isCurrentlyInCreation(name)) {
+			if (isEligibleBean(name)) {//判断他是不是一个合适的 是我们想要的 默认为true
+				if (this.beanFactory.isCurrentlyInCreation(name)) {//判断组件 BeanFactoryTransactionAttributeSourceAdvisor是否还在创建
 					if (logger.isTraceEnabled()) {
 						logger.trace("Skipping currently created advisor '" + name + "'");
 					}
 				}
-				else {
-					try {
+				else {//不是的话
+					try {//显示的调用getBean方法获取我们的BeanFactoryTransactionAttributeSourceAdvisor 加入到集合
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					}
 					catch (BeanCreationException ex) {

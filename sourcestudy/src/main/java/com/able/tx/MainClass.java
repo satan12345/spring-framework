@@ -1,6 +1,7 @@
 package com.able.tx;
 
 
+import com.able.tx.service.IPayService;
 import com.able.tx.service.PayService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -18,7 +19,7 @@ public class MainClass {
 		while (beanNamesIterator.hasNext()) {
 			System.err.println("beanNamesIterator.next() = " + beanNamesIterator.next());
 		}
-		PayService payService = ctx.getBean(PayService.class);
+		IPayService payService = ctx.getBean(IPayService.class);
 		payService.pay(1, 100);
 	}
 }

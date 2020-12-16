@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  * Created by xsls on 2019/6/10.
  */
 @Configuration
-//@EnableTransactionManagement
+@EnableTransactionManagement
 @EnableAspectJAutoProxy(
 //		proxyTargetClass = true 强制使用cglib
 )   /*<aop:aspectj-autoproxy/>*/

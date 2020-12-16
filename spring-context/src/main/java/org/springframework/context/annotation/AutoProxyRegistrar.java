@@ -58,8 +58,10 @@ public class AutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		boolean candidateFound = false;
-		Set<String> annTypes = importingClassMetadata.getAnnotationTypes();//获取所有注解
-		for (String annType : annTypes) {//遍历注解
+		//获取所有注解
+		Set<String> annTypes = importingClassMetadata.getAnnotationTypes();
+		//遍历注解
+		for (String annType : annTypes) {
 			AnnotationAttributes candidate = AnnotationConfigUtils.attributesFor(importingClassMetadata, annType);//获取注解上的所有属性
 			if (candidate == null) {
 				continue;
@@ -70,6 +72,8 @@ public class AutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 					Boolean.class == proxyTargetClass.getClass()) {
 				candidateFound = true;
 				if (mode == AdviceMode.PROXY) {
+					//导入处理事务的beanPostProcessor
+					//导入组件
 					AopConfigUtils.registerAutoProxyCreatorIfNecessary(registry);
 					if ((Boolean) proxyTargetClass) {
 						AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);

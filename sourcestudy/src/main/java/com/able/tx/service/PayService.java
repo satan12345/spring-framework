@@ -15,22 +15,23 @@ import javax.annotation.Resource;
  * @date 2020-11-11 15:53
  */
 @Service
-public class PayService {
+public class PayService implements IPayService {
 	@Resource
 	AccountDao accountDao;
 	@Resource
 	ProductDao productDao;
 
-
+	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void pay(Integer accountId, int money) {
 
 		int retVal = accountDao.updateAccountBlance(accountId, money);
-		((PayService) AopContext.currentProxy()).updateProductStore(1);
+		((IPayService) AopContext.currentProxy()).updateProductStore(1);
 //		System.out.println(1/0);
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW)
+	@Override
+	@Transactional(propagation = Propagation.REQUIRES_NEW,rollbackFor = Exception.class)
 	public void updateProductStore(int productId) {
 		try {
 			productDao.updateProductStore(productId);

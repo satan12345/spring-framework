@@ -35,42 +35,18 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
  * @see EnableTransactionManagement
  * @see TransactionManagementConfigurationSelector
  */
+
+/**
+ * 注册了一个配置类  往容器中注册了组件
+ */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 public class ProxyTransactionManagementConfiguration extends AbstractTransactionManagementConfiguration {
 
-	/**
-	 * 导入了关于事务的切面信息
-	 * @param transactionAttributeSource
-	 * @param transactionInterceptor
-	 * @return
-	 */
-	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor(
-			TransactionAttributeSource transactionAttributeSource, TransactionInterceptor transactionInterceptor) {
-
-		BeanFactoryTransactionAttributeSourceAdvisor advisor = new BeanFactoryTransactionAttributeSourceAdvisor();
-		advisor.setTransactionAttributeSource(transactionAttributeSource);
-		advisor.setAdvice(transactionInterceptor);
-		if (this.enableTx != null) {
-			advisor.setOrder(this.enableTx.<Integer>getNumber("order"));
-		}
-		return advisor;
-	}
-
-	/**
-	 * 事务属性源对象：用于解析注解@Transactional
-	 * @return
-	 */
-	@Bean
-	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
-	public TransactionAttributeSource transactionAttributeSource() {
-		return new AnnotationTransactionAttributeSource();
-	}
 
 	/**
 	 * 用户拦截事务方法执行的
+	 * 声明advise
 	 * @param transactionAttributeSource
 	 * @return
 	 */
@@ -84,5 +60,38 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 		}
 		return interceptor;
 	}
+
+	/**
+	 * 事务属性源对象：用于解析@Transactional注解
+	 * @return
+	 */
+	@Bean
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	public TransactionAttributeSource transactionAttributeSource() {
+		//利用这个对象解析@Transaction 一旦方法上解析到这个注解 则说明匹配上 需要进行动态代理的创建
+		return new AnnotationTransactionAttributeSource();
+	}
+	/**
+	 * 导入了关于事务的切面信息
+	 */
+	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
+	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
+	public BeanFactoryTransactionAttributeSourceAdvisor transactionAdvisor(
+			TransactionAttributeSource transactionAttributeSource, TransactionInterceptor transactionInterceptor) {
+		//创建advisor
+		BeanFactoryTransactionAttributeSourceAdvisor advisor = new BeanFactoryTransactionAttributeSourceAdvisor();
+		//通过设置事务属性源 进行
+		advisor.setTransactionAttributeSource(transactionAttributeSource);
+		//组件设置advice
+		advisor.setAdvice(transactionInterceptor);
+		if (this.enableTx != null) {
+			advisor.setOrder(this.enableTx.<Integer>getNumber("order"));
+		}
+		return advisor;
+	}
+
+
+
+
 
 }
