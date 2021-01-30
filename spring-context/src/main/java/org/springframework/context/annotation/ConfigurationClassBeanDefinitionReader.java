@@ -159,7 +159,7 @@ class ConfigurationClassBeanDefinitionReader {
 		configBeanDef.setScope(scopeMetadata.getScopeName());
 		String configBeanName = this.importBeanNameGenerator.generateBeanName(configBeanDef, this.registry);
 		AnnotationConfigUtils.processCommonDefinitionAnnotations(configBeanDef, metadata);
-
+		//注册到bean定义中去
 		BeanDefinitionHolder definitionHolder = new BeanDefinitionHolder(configBeanDef, configBeanName);
 		definitionHolder = AnnotationConfigUtils.applyScopedProxyMode(scopeMetadata, definitionHolder, this.registry);
 		this.registry.registerBeanDefinition(definitionHolder.getBeanName(), definitionHolder.getBeanDefinition());
@@ -282,7 +282,8 @@ class ConfigurationClassBeanDefinitionReader {
 		if (logger.isTraceEnabled()) {
 			logger.trace(String.format("Registering bean definition for @Bean method %s.%s()",
 					configClass.getMetadata().getClassName(), beanName));
-		}//注册bean定义信息到IOC容器中
+		}
+		//注册bean定义信息到IOC容器中
 		this.registry.registerBeanDefinition(beanName, beanDefToRegister);
 	}
 

@@ -53,8 +53,8 @@ final class PostProcessorRegistrationDelegate {
 	}
 
 
-	public static void invokeBeanFactoryPostProcessors(
-			ConfigurableListableBeanFactory beanFactory, List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
+	public static void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory,
+			List<BeanFactoryPostProcessor> beanFactoryPostProcessors) {
 
 		// Invoke BeanDefinitionRegistryPostProcessors first, if any.
 		//将已经处理过的postProcess记录下来
@@ -63,6 +63,7 @@ final class PostProcessorRegistrationDelegate {
 		if (beanFactory instanceof BeanDefinitionRegistry) {
 			BeanDefinitionRegistry registry = (BeanDefinitionRegistry) beanFactory;
 			//分别保存实现了 BeanFactoryPostProcessor 接口 与BeanDefinitionRegistryPostProcessor bean
+			//定义了普通的beanFactoryPostProcess 与带有注册bean定义功能的beanFacotoryPostProcessor
 			List<BeanFactoryPostProcessor> regularPostProcessors = new ArrayList<>();
 			List<BeanDefinitionRegistryPostProcessor> registryProcessors = new ArrayList<>();
 			//循环我们自定义的beanFactoryPostProcessors（在加载bean工厂的时候 只会加载内置的beanFactoryPostProcessor）而自定义的不会存在
@@ -91,7 +92,7 @@ final class PostProcessorRegistrationDelegate {
 			//第一步：从容器中获取 所有的类型为BeanDefinitionRegistryPostProcessor的bean名称
 			String[] postProcessorNames =
 					beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);
-			//循环
+
 			for (String ppName : postProcessorNames) {
 				//判断指定名称的bean定义是否实现了PriorityOrdered接口 如果实现 则最优先调用
 				if (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) {
@@ -109,9 +110,12 @@ final class PostProcessorRegistrationDelegate {
 			/** https://www.processon.com/view/link/5f5075c763768959e2d109df
 			 * 在这里典型的beanDefinitionRegistryPostProcessor就是ConfigurationClassPostProcessor
 			 * 用于进行bean定义的加载 比如我们的包扫描 @Import 等等
+			 * TODO TMD相当重要
 			 */
 			invokeBeanDefinitionRegistryPostProcessors(currentRegistryProcessors, registry);
 			currentRegistryProcessors.clear();//清空集合
+
+
 			//从容器中获取BeanDefinitionRegistryPostProcessor类型的bean名称集合
 			// Next, invoke the BeanDefinitionRegistryPostProcessors that implement Ordered.
 			postProcessorNames = beanFactory.getBeanNamesForType(BeanDefinitionRegistryPostProcessor.class, true, false);

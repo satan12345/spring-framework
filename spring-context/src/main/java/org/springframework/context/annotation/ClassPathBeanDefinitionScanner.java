@@ -124,6 +124,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 * will be a {@link org.springframework.core.io.support.PathMatchingResourcePatternResolver}.
 	 * @param registry the {@code BeanFactory} to load bean definitions into, in the form
 	 * of a {@code BeanDefinitionRegistry}
+	 *
 	 * @param useDefaultFilters whether to include the default filters for the
 	 * {@link org.springframework.stereotype.Component @Component},
 	 * {@link org.springframework.stereotype.Repository @Repository},
@@ -271,6 +272,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 	 */
 	protected Set<BeanDefinitionHolder> doScan(String... basePackages) {
 		Assert.notEmpty(basePackages, "At least one base package must be specified");
+		//创建集合用于保存扫描到的bean定义信息
 		Set<BeanDefinitionHolder> beanDefinitions = new LinkedHashSet<>();
 		//循环包路径 并获取包路径下的组件bean定义集合
 		for (String basePackage : basePackages) {
@@ -279,6 +281,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
 			//循环bean定义 设置一些属性后加入到bean工厂
 			for (BeanDefinition candidate : candidates) {
 				ScopeMetadata scopeMetadata = this.scopeMetadataResolver.resolveScopeMetadata(candidate);
+				//设置作用域
 				candidate.setScope(scopeMetadata.getScopeName());
 				//设置beanName
 				String beanName = this.beanNameGenerator.generateBeanName(candidate, this.registry);

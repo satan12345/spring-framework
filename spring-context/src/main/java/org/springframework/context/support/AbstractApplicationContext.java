@@ -577,8 +577,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				// Initialize event multicaster for this context.
 				/**
 				 *    创建事件多播器
-				 *    	管理所有的监听器
-				 *    	负责调用时间对应的监听器
+				 *    管理所有的监听器
+				 *    负责调用时间对应的监听器
 				 */
 				initApplicationEventMulticaster();
 				//留给子容器重写
@@ -867,8 +867,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 			if (logger.isTraceEnabled()) {
 				logger.trace("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}
-		}
-		else {
+		}else {
 			//当前容器中不存在着名为applicationEventMulticaster的组件 则注册该组件到bean工厂 并赋值
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
@@ -941,6 +940,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		this.earlyApplicationEvents = null;
 		if (!CollectionUtils.isEmpty(earlyEventsToProcess)) {
 			for (ApplicationEvent earlyEvent : earlyEventsToProcess) {
+				//广播事件
 				getApplicationEventMulticaster().multicastEvent(earlyEvent);
 			}
 		}

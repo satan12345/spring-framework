@@ -77,6 +77,7 @@ class ComponentScanAnnotationParser {
 		//创建 扫描器
 		ClassPathBeanDefinitionScanner scanner = new ClassPathBeanDefinitionScanner(this.registry,
 				componentScan.getBoolean("useDefaultFilters"), this.environment, this.resourceLoader);
+
 		//创建扫描器 并根据注解值为扫描器赋值
 		Class<? extends BeanNameGenerator> generatorClass = componentScan.getClass("nameGenerator");
 		boolean useInheritedGenerator = (BeanNameGenerator.class == generatorClass);
@@ -131,6 +132,7 @@ class ComponentScanAnnotationParser {
 				return declaringClass.equals(className);
 			}
 		});
+		//开始扫描
 		return scanner.doScan(StringUtils.toStringArray(basePackages));
 	}
 	//策略模式 根据排除的属性 设置相对应的filter

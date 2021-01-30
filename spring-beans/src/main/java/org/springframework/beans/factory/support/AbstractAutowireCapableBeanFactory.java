@@ -598,12 +598,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		instanceWrapper = createBeanInstance(beanName, mbd, args);
 		//从包装类中获取被包装的对象 也就是刚刚创建成功的bean 与对象的类型
+		//创建bean  得到早期对象
 		final Object bean = instanceWrapper.getWrappedInstance();
 		Class<?> beanType = instanceWrapper.getWrappedClass();
 		if (beanType != NullBean.class) {
 			mbd.resolvedTargetType = beanType;
 		}
-
 		// Allow post-processors to modify the merged bean definition.
 		synchronized (mbd.postProcessingLock) {
 			if (!mbd.postProcessed) {

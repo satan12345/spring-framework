@@ -227,6 +227,15 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 						 * 将三级缓存中的对象保存到二级缓存中
 						 * 然后删除三级缓存中的对象
 						 */
+						/**
+						 * 从三级缓存中获取数据 因为在数据在放入到三级缓存的时候放入
+						 * 的是一个lambda函数
+						 * 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
+						 * org.springframework.beans.factory.support.DefaultSingletonBeanRegistry#
+						 * addSingletonFactory(java.lang.String, org.springframework.beans.factory.ObjectFactory)
+						 *
+						 * 所以在调用singletonFactory.getObject 则会执行传入的函数（该函数会执行beanPostProcessor）
+						 */
 						singletonObject = singletonFactory.getObject();
 						this.earlySingletonObjects.put(beanName, singletonObject);
 						this.singletonFactories.remove(beanName);
@@ -304,6 +313,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 					}
 					afterSingletonCreation(beanName);
 				}
+				//是否创建bean成功
 				if (newSingleton) {
 					//bean创建成功了 添加到单例bean缓存池中
 					addSingleton(beanName, singletonObject);
@@ -403,6 +413,8 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @see #isSingletonCurrentlyInCreation
 	 */
 	protected void beforeSingletonCreation(String beanName) {
+		//inCreationCheckExclusions中的beanName 表示如果是这些bean正在创建 重复创建也没有关系
+		//singletonsCurrentlyInCreation中的beanName 表示这些bean正常创建中，在没有创建完成时不能重复创建
 		if (!this.inCreationCheckExclusions.contains(beanName) && !this.singletonsCurrentlyInCreation.add(beanName)) {
 			throw new BeanCurrentlyInCreationException(beanName);
 		}
@@ -415,6 +427,7 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 	 * @see #isSingletonCurrentlyInCreation
 	 */
 	protected void afterSingletonCreation(String beanName) {
+
 		if (!this.inCreationCheckExclusions.contains(beanName) && !this.singletonsCurrentlyInCreation.remove(beanName)) {
 			throw new IllegalStateException("Singleton '" + beanName + "' isn't currently in creation");
 		}

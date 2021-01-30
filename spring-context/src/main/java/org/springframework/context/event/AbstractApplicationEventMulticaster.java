@@ -426,9 +426,12 @@ public abstract class AbstractApplicationEventMulticaster
 	 */
 	private class ListenerRetriever {
 
-		public final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();
-
+		/**
+		 * 监听者列表
+		 */
 		public final Set<String> applicationListenerBeans = new LinkedHashSet<>();
+
+		public final Set<ApplicationListener<?>> applicationListeners = new LinkedHashSet<>();
 
 		private final boolean preFiltered;
 

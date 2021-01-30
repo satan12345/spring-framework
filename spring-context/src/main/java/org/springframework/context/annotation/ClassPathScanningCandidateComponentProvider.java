@@ -199,7 +199,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	 * {@link Controller @Controller} stereotype annotations.
 	 * <p>Also supports Java EE 6's {@link javax.annotation.ManagedBean} and
 	 * JSR-330's {@link javax.inject.Named} annotations, if available.
-	 * 注册默认的filer
+	 * 注册默认的filter
 	 */
 	@SuppressWarnings("unchecked")
 	protected void registerDefaultFilters() {
@@ -313,8 +313,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 	public Set<BeanDefinition> findCandidateComponents(String basePackage) {
 		if (this.componentsIndex != null && indexSupportsIncludeFilters()) {
 			return addCandidateComponentsFromIndex(this.componentsIndex, basePackage);
-		}
-		else {
+		}else {//扫描候选组件
 			return scanCandidateComponents(basePackage);
 		}
 	}
@@ -434,7 +433,7 @@ public class ClassPathScanningCandidateComponentProvider implements EnvironmentC
 				//判断资源文件是否可读
 				if (resource.isReadable()) {
 					try {
-						//将资源文件转换成源文件读取器 然后判断是否是候选组件 是的话 将其封装成 ScannedGenericBeanDefinition 并加入集合中
+						//将资源文件转换成 源文件读取器 然后判断是否是候选组件 是的话 将其封装成 ScannedGenericBeanDefinition 并加入集合中
 						MetadataReader metadataReader = getMetadataReaderFactory().getMetadataReader(resource);
 						//是不是候选的组件（是否是排除的 是否需要进行包含的）
 						if (isCandidateComponent(metadataReader)) {

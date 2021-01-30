@@ -237,6 +237,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	public Object getEarlyBeanReference(Object bean, String beanName) {
 		Object cacheKey = getCacheKey(bean.getClass(), beanName);
 		this.earlyProxyReferences.put(cacheKey, bean);
+		//aop产生代理对象
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
 
@@ -304,7 +305,11 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		if (bean != null) {
 			//获取缓存key
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
-			//之前循环依赖创建的动态代理 如果是现在的bean 就不在创建  并且移除
+			/**
+			 * 获取之前是否创建过早期的代理对象
+			 * 如果获取到的早期对象与当前的bean相同 说明之前有创建过代理对象 则此次不再创建代理对象
+			 * 如果此次移除返回的对象为null 说明之前没有创建过动态代理对象 则与当前bean不相等 则会创建bean的动态代理对象 然后返回代理对象
+			 */
 			if (this.earlyProxyReferences.remove(cacheKey) != bean) {
 				//找到合适的就会被代理
 				//该方法将返回动态代理实例

@@ -167,9 +167,11 @@ class ConfigurationClassParser {
 
 
 	public void parse(Set<BeanDefinitionHolder> configCandidates) {
-		for (BeanDefinitionHolder holder : configCandidates) {//循环配置类进行解析
+		//循环配置类进行解析
+		for (BeanDefinitionHolder holder : configCandidates) {
 			BeanDefinition bd = holder.getBeanDefinition();
-			try {//真正解析我们的bean定义：通过注解元数据解析
+			try {
+				//真正解析我们的bean定义：通过注解元数据解析
 				if (bd instanceof AnnotatedBeanDefinition) {
 					parse(((AnnotatedBeanDefinition) bd).getMetadata(), holder.getBeanName());
 				}
@@ -201,7 +203,9 @@ class ConfigurationClassParser {
 	protected final void parse(Class<?> clazz, String beanName) throws IOException {
 		processConfigurationClass(new ConfigurationClass(clazz, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
-	//处理配置类
+	/**
+	 * 处理配置类
+	 */
 	protected final void parse(AnnotationMetadata metadata, String beanName) throws IOException {
 		processConfigurationClass(new ConfigurationClass(metadata, beanName), DEFAULT_EXCLUSION_FILTER);
 	}
@@ -248,6 +252,7 @@ class ConfigurationClassParser {
 		// Recursively process the configuration class and its superclass hierarchy.
 		SourceClass sourceClass = asSourceClass(configClass, filter);
 		do {
+			//解析
 			sourceClass = doProcessConfigurationClass(configClass, sourceClass, filter);
 		}
 		while (sourceClass != null);
@@ -285,12 +290,13 @@ class ConfigurationClassParser {
 						"]. Reason: Environment must implement ConfigurableEnvironment");
 			}
 		}
-		//从我们的配置类上解析@ComponentScan注解 并转换为对象获取属性 将@ComponentScan注解解析为componentScans对象
+		//从我们的配置类 解析@ComponentScan注解 并转换为对象获取属性 将@ComponentScan注解解析为componentScans对象
+		//解析ComponentScan
 		// Process any @ComponentScan annotations
 		Set<AnnotationAttributes> componentScans = AnnotationConfigUtils.attributesForRepeatable(
 				sourceClass.getMetadata(), ComponentScans.class, ComponentScan.class);
 		if (!componentScans.isEmpty() &&
-				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(), ConfigurationPhase.REGISTER_BEAN)) {
+				!this.conditionEvaluator.shouldSkip(sourceClass.getMetadata(),ConfigurationPhase.REGISTER_BEAN)) {
 			//循环解析我们解析出来的componentScans 对象
 			for (AnnotationAttributes componentScan : componentScans) {
 				// The config class is annotated with @ComponentScan -> perform the scan immediately
@@ -310,7 +316,7 @@ class ConfigurationClassParser {
 			}
 		}
 
-		//解析@import注解
+		//解析@import注解 保存起来 还没有注册到bean定义中
 		// Process any @Import annotations
 		processImports(configClass, sourceClass, getImports(sourceClass), filter, true);
 
@@ -325,8 +331,11 @@ class ConfigurationClassParser {
 				configClass.addImportedResource(resolvedResource, readerClass);
 			}
 		}
-		//解析@bean注解的方法
+		//解析@bean注解的方法 将其保存用于后续的注册到bean定义
 		// Process individual @Bean methods
+		/**
+		 * 获取方法的元数据信息 将其保存到集合中
+		 */
 		Set<MethodMetadata> beanMethods = retrieveBeanMethodMetadata(sourceClass);
 		for (MethodMetadata methodMetadata : beanMethods) {
 			configClass.addBeanMethod(new BeanMethod(methodMetadata, configClass));
@@ -547,6 +556,9 @@ class ConfigurationClassParser {
 			for (SourceClass annotation : sourceClass.getAnnotations()) {
 				String annName = annotation.getMetadata().getClassName();
 				if (!annName.equals(Import.class.getName())) {
+					/**
+					 * 递归调用
+					 */
 					collectImports(annotation, imports, visited);
 				}
 			}
@@ -603,10 +615,10 @@ class ConfigurationClassParser {
 										this.environment, this.resourceLoader, this.registry);
 						//加载到容器中去
 						configClass.addImportBeanDefinitionRegistrar(registrar, currentSourceClass.getMetadata());
-					}
-					else {
+					}else {
 						// Candidate class not an ImportSelector or ImportBeanDefinitionRegistrar ->
 						// process it as an @Configuration class
+						//作为一个普通的bean进行处理
 						this.importStack.registerImport(
 								currentSourceClass.getMetadata(), candidate.getMetadata().getClassName());
 						processConfigurationClass(candidate.asConfigClass(configClass), exclusionFilter);

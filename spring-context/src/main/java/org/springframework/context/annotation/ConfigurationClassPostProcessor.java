@@ -231,6 +231,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			throw new IllegalStateException(
 					"postProcessBeanFactory already called on this post-processor against " + registry);
 		}
+		//记录处理过的postprocessor 防止重复解析
 		this.registriesPostProcessed.add(registryId);
 		//真正解析我们的bean定义
 		processConfigBeanDefinitions(registry);
@@ -264,16 +265,18 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 	 */
 	public void processConfigBeanDefinitions(BeanDefinitionRegistry registry) {
 		List<BeanDefinitionHolder> configCandidates = new ArrayList<>();
-		String[] candidateNames = registry.getBeanDefinitionNames();//获取当前容器中所有的bean定义的名称
+		//获取当前容器中所有的bean定义的名称
+		String[] candidateNames = registry.getBeanDefinitionNames();
 		//循环 将我们定义的配置类获取出来 带@Configuration注解的配置类
 		for (String beanName : candidateNames) {
-			BeanDefinition beanDef = registry.getBeanDefinition(beanName);//根据名称从IOC容器中获取BeanDefinition
+			//根据名称从IOC容器中获取BeanDefinition
+			BeanDefinition beanDef = registry.getBeanDefinition(beanName);
 			if (beanDef.getAttribute(ConfigurationClassUtils.CONFIGURATION_CLASS_ATTRIBUTE) != null) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("Bean definition has already been processed as a configuration class: " + beanDef);
 				}
-			}//正在进行解析的BeanDefinition 是否是一个完整的配置类 还是一个非正式的配置类（带了@Configuration注解则是一个完整的配置类）
-			else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
+			}else if (ConfigurationClassUtils.checkConfigurationClassCandidate(beanDef, this.metadataReaderFactory)) {
+				//正在进行解析的BeanDefinition 是否是一个完整的配置类 还是一个非正式的配置类（带了@Configuration注解则是一个完整的配置类）
 				configCandidates.add(new BeanDefinitionHolder(beanDef, beanName));
 			}
 		}
@@ -297,7 +300,8 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 			if (!this.localBeanNameGeneratorSet) {
 				BeanNameGenerator generator = (BeanNameGenerator) sbr.getSingleton(
 						AnnotationConfigUtils.CONFIGURATION_BEAN_NAME_GENERATOR);
-				if (generator != null) {//创建两个组件  一个用于为扫描到的bean生成名称 一个用于为导入的bean生成名称
+				if (generator != null) {
+					//创建两个组件  一个用于为扫描到的bean生成名称 一个用于为导入的bean生成名称
 					this.componentScanBeanNameGenerator = generator;
 					this.importBeanNameGenerator = generator;
 				}
@@ -307,7 +311,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		if (this.environment == null) {
 			this.environment = new StandardEnvironment();
 		}
-		//创建配置类解析器类
+		//创建配置类解析器类 解析带有@configuration的类
 		// Parse each @Configuration class
 		ConfigurationClassParser parser = new ConfigurationClassParser(
 				this.metadataReaderFactory, this.problemReporter, this.environment,
@@ -318,6 +322,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 		do {
 			//真正解析配置类
 			parser.parse(candidates);
+
 			parser.validate();
 
 			Set<ConfigurationClass> configClasses = new LinkedHashSet<>(parser.getConfigurationClasses());
@@ -328,10 +333,16 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				this.reader = new ConfigurationClassBeanDefinitionReader(
 						registry, this.sourceExtractor, this.resourceLoader, this.environment,
 						this.importBeanNameGenerator, parser.getImportRegistry());
-			}//注册@import @bean等注解方式的bean定义信息
+			}
+			//将解析到@import @bean等注解标注的信息 注册为beanDefinition
+			//注册@import @bean等注解方式的bean定义信息
 			this.reader.loadBeanDefinitions(configClasses);
 			alreadyParsed.addAll(configClasses);
-
+			/**
+			 * 每次将需要解析的bean定义放入 candidates集合中 解析完成后清空集合
+			 * 然后对比老的候选集合 与新的候选集合 将存在新的候选集合中 但是不存在老的候选集合中的bean定义（即还没有解析的bean定义）
+			 * 添加到candidates中 然后再去解析 直到candidates为空则跳出循环
+			 */
 			candidates.clear();
 			if (registry.getBeanDefinitionCount() > candidateNames.length) {
 				String[] newCandidateNames = registry.getBeanDefinitionNames();
@@ -351,8 +362,7 @@ public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPo
 				}
 				candidateNames = newCandidateNames;
 			}
-		}
-		while (!candidates.isEmpty());
+		}while (!candidates.isEmpty());
 
 		// Register the ImportRegistry as a bean in order to support ImportAware @Configuration classes
 		if (sbr != null && !sbr.containsSingleton(IMPORT_REGISTRY_BEAN_NAME)) {
