@@ -427,7 +427,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object result = existingBean;
 		for (BeanPostProcessor processor : getBeanPostProcessors()) {
-
+			//调用所有bean后置处理器的的前置方法
 			Object current = processor.postProcessBeforeInitialization(result, beanName);
 			if (current == null) {
 				return result;
@@ -626,6 +626,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Eagerly cache singletons to be able to resolve circular references
 		// even when triggered by lifecycle interfaces like BeanFactoryAware.
 		/**
+		 * 是否允许暴露早期对象
 		 * 单例的&&是否允许循环依赖（spring默认为true）&& 判断是否正在创建的标记
 		 */
 		boolean earlySingletonExposure = (mbd.isSingleton() && this.allowCircularReferences && isSingletonCurrentlyInCreation(beanName));
@@ -1246,6 +1247,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		//工厂方法不为空 使用工厂方法创建bean
 		if (mbd.getFactoryMethodName() != null) {
+			//通过工厂方法创建实例
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
@@ -1278,6 +1280,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		// Preferred constructors for default construction?
 		ctors = mbd.getPreferredConstructors();
 		if (ctors != null) {
+			//有参构造器创建实例
 			return autowireConstructor(beanName, mbd, ctors, null);
 		}
 		//利用无参构造函数实例化bean

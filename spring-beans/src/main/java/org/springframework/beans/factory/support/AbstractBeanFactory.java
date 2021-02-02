@@ -258,6 +258,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					logger.trace("Returning cached instance of singleton bean '" + beanName + "'");
 				}
 			}
+			//判断是否是工厂bean
 			bean = getObjectForBeanInstance(sharedInstance, name, beanName, null);
 		}else {
 			//spring 只能解决单例对象的setter 注入的循环依赖 不能解决构造器注入的循环依赖
@@ -301,7 +302,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 				markBeanAsCreated(beanName);
 			}
 			try {
-				//获取RootBeanDefinition
+				//获取RootBeanDefinition（合并bean定义）
 				final RootBeanDefinition mbd = getMergedLocalBeanDefinition(beanName);
 				//检查当前的BeanDefinition是不是抽象的bean定义
 				checkMergedBeanDefinition(mbd, beanName, args);
@@ -1289,6 +1290,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected RootBeanDefinition getMergedLocalBeanDefinition(String beanName) throws BeansException {
 		// Quick check on the concurrent map first, with minimal locking.
+		//先去缓存中获取 缓存中没有 则去合并
 		RootBeanDefinition mbd = this.mergedBeanDefinitions.get(beanName);
 		if (mbd != null && !mbd.stale) {
 			return mbd;
@@ -1343,21 +1345,19 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					else {
 						mbd = new RootBeanDefinition(bd);
 					}
-				}
-				else {
+				}else {
+					//合并父定义
 					// Child bean definition: needs to be merged with parent.
 					BeanDefinition pbd;
 					try {
 						String parentBeanName = transformedBeanName(bd.getParentName());
 						if (!beanName.equals(parentBeanName)) {
 							pbd = getMergedBeanDefinition(parentBeanName);
-						}
-						else {
+						}else {
 							BeanFactory parent = getParentBeanFactory();
 							if (parent instanceof ConfigurableBeanFactory) {
 								pbd = ((ConfigurableBeanFactory) parent).getMergedBeanDefinition(parentBeanName);
-							}
-							else {
+							}else {
 								throw new NoSuchBeanDefinitionException(parentBeanName,
 										"Parent name '" + parentBeanName + "' is equal to bean name '" + beanName +
 										"': cannot be resolved without a ConfigurableBeanFactory parent");
@@ -1425,7 +1425,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 */
 	protected void checkMergedBeanDefinition(RootBeanDefinition mbd, String beanName, @Nullable Object[] args)
 			throws BeanDefinitionStoreException {
-
+		//查看bean定义是否是抽象的
 		if (mbd.isAbstract()) {
 			throw new BeanIsAbstractException(beanName);
 		}
