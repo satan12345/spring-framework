@@ -3,6 +3,7 @@ package com.able.iocbeanlifecicle;
 import org.springframework.beans.factory.InitializingBean;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * @param
@@ -13,6 +14,9 @@ import javax.annotation.PostConstruct;
 public class Person implements InitializingBean {
 	private String name;
 	private String sex;
+
+	MyTest myTest;
+
 
 	public void initPerson(){
 		System.out.println("initPerson");
@@ -39,6 +43,14 @@ public class Person implements InitializingBean {
 		this.sex = sex;
 	}
 
+	public MyTest getMyTest() {
+		return myTest;
+	}
+
+	public void setMyTest(MyTest myTest) {
+		this.myTest = myTest;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("Person{");
@@ -52,6 +64,7 @@ public class Person implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		System.out.println("person afterPropertiesSet");
 	}
+
 
 }
 

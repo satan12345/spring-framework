@@ -14,15 +14,9 @@ public class InstanceA  {
 	@Autowired
 	private InstanceB instanceB;
 
-
-
-//	public String getMsg() {
-//		return msg;
-//	}
-//
-//	public void setMsg(String msg) {
-//		this.msg = msg;
-//	}
+	public void setInstanceB(InstanceB instanceB) {
+		this.instanceB = instanceB;
+	}
 
 	@Override
 	public String toString() {

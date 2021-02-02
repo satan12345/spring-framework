@@ -16,13 +16,14 @@ public class MainClass {
 		InstanceA instanceA= (InstanceA) ctx.getBean("instanceA");
 		System.out.println("instanceA = " + instanceA);
 
-		//InstanceB instanceB= (InstanceB) ctx.getBean("instanceB");
-		Order order=new Order();
-		order.setId(1);
-		System.out.println("下单");
-		//发布事件
-		ctx.publishEvent(new OrderEvent(order,"减库存"));
-		System.out.println("日志");
+		InstanceB instanceB= (InstanceB) ctx.getBean("instanceB");
+		System.out.println("instanceB = " + instanceB);
+//		Order order=new Order();
+//		order.setId(1);
+//		System.out.println("下单");
+//		//发布事件
+//		ctx.publishEvent(new OrderEvent(order,"减库存"));
+//		System.out.println("日志");
 
 	}
 }
