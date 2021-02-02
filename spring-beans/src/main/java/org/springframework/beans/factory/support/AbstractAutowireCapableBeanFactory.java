@@ -542,6 +542,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			 * 解析我们的aop切面信息进行缓存
 			 *InstantiationAwareBeanPostProcessor
 			 * 给后置处理器一个机会去返回代理对象
+			 *
+			 * 找出切面进行缓存
 			 */
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
@@ -595,8 +597,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 		if (instanceWrapper == null) {
 			//使用合适的实例化策略来创建新的实例：工厂方法 构造函数注入  简单初始化  该方法很复杂也很重要
+			instanceWrapper = createBeanInstance(beanName, mbd, args);
 		}
-		instanceWrapper = createBeanInstance(beanName, mbd, args);
 		//从包装类中获取被包装的对象 也就是刚刚创建成功的bean 与对象的类型
 		//创建bean  得到早期对象
 		final Object bean = instanceWrapper.getWrappedInstance();
@@ -638,7 +640,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 				logger.trace("Eagerly caching bean '" + beanName + "to allow for resolving potential circular references");
 			}
 			/**
-			 * 把我们的早期对象包装成一个singletonFactory对象 该对象提供了一个getObject方法，该方法内部调用getEarlyBeanReference
+			 * 把我们的早期对象包装成一个ObjectFactory对象
+			 * 该对象提供了一个getObject方法，该方法内部调用getEarlyBeanReference
 			 */
 			//将早期对象暴露到三级缓存中
 			addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, mbd, bean));
@@ -1856,7 +1859,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
 		Object wrappedBean = bean;
 		if (mbd == null || !mbd.isSynthetic()) {
-			//调用我们的bean的后置处理器的 postProcessBeforeInitialization方法 @PostCust注解的方法
+			//调用我们的bean的后置处理器的 postProcessBeforeInitialization方法 @PostConstruct注解的方法
 			wrappedBean = applyBeanPostProcessorsBeforeInitialization(wrappedBean, beanName);
 		}
 

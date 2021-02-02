@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
  * @author jipeng
  * @date 2020-09-14 15:22
  */
+
 public class Person implements InitializingBean {
 	private String name;
 	private String sex;

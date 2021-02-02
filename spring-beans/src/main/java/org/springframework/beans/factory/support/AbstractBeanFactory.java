@@ -262,7 +262,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		}else {
 			//spring 只能解决单例对象的setter 注入的循环依赖 不能解决构造器注入的循环依赖
 
-			//判断当前线程中创建的bean是属于prototype模式的 则抛出异常
+			//判断当前线程中创建的bean是属于prototype模式的 则抛出异常 原型对象没有进行缓存
 			// Fail if we're already creating this bean instance:
 			// We're assumably within a circular reference.
 			if (isPrototypeCurrentlyInCreation(beanName)) {
@@ -296,7 +296,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 					return (T) parentBeanFactory.getBean(nameToLookup);
 				}
 			}
-
+			//是否作为标记bean 而不是实际使用
 			if (!typeCheckOnly) {
 				markBeanAsCreated(beanName);
 			}
@@ -345,6 +345,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 							throw ex;
 						}
 					});
+					//判断是不是工厂bean
 					bean = getObjectForBeanInstance(sharedInstance, name, beanName, mbd);
 				}else if (mbd.isPrototype()) {
 					// It's a prototype -> create a new instance.
@@ -1817,6 +1818,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 		// Now we have the bean instance, which may be a normal bean or a FactoryBean.
 		// If it's a FactoryBean, we use it to create a bean instance, unless the
 		// caller actually wants a reference to the factory.
+		//不是工厂bean 则直接返回
 		if (!(beanInstance instanceof FactoryBean)) {
 			return beanInstance;
 		}
@@ -1826,6 +1828,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 			mbd.isFactoryBean = true;
 		}
 		else {
+			//从缓存中获取
 			object = getCachedObjectForFactoryBean(beanName);
 		}
 		if (object == null) {

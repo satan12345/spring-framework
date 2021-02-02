@@ -546,7 +546,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				 * 		 :BeanDefinitionRegistryPostProcessor
 				 */
 
-
 				/**
 				 * 调用我们的bean工厂的后置处理器
 				 *   调用实现 BeanFactoryPostProcessor(带修改bean定义) BeanDefinitionRegistryPostProcessor(带注册bean定义) 这两个接口的bean定义
