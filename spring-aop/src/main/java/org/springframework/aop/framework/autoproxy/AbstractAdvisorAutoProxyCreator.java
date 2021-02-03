@@ -66,6 +66,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 	}
 
 	protected void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+		//切面探索工具
 		this.advisorRetrievalHelper = new BeanFactoryAdvisorRetrievalHelperAdapter(beanFactory);
 	}
 

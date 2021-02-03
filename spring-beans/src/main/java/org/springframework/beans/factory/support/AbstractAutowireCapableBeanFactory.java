@@ -1183,7 +1183,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		return bean;
 	}
 
-	/**
+	/**实例化之前调用
 	 * Apply InstantiationAwareBeanPostProcessors to the specified bean definition
 	 * (by class and name), invoking their {@code postProcessBeforeInstantiation} methods.
 	 * <p>Any returned object will be used as the bean instead of actually instantiating

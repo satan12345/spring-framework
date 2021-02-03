@@ -25,9 +25,14 @@ public class MainConfig {
 	public Caculate caculate(){
 		return new AbleCaculate();
 	}
+
 	@Bean
 	public LogAspect logAspect(){
 		return new LogAspect();
+	}
+	@Bean
+	public LogAspectAnother logAspectAnother(){
+		return new LogAspectAnother();
 	}
 
 }

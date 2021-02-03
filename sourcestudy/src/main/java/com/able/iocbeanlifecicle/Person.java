@@ -1,6 +1,7 @@
 package com.able.iocbeanlifecicle;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -10,11 +11,11 @@ import javax.annotation.Resource;
  * @author jipeng
  * @date 2020-09-14 15:22
  */
-
+@Component
 public class Person implements InitializingBean {
 	private String name;
 	private String sex;
-
+	@Resource
 	MyTest myTest;
 
 

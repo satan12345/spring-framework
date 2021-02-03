@@ -16,12 +16,12 @@ import org.springframework.context.annotation.Import;
 @ComponentScan(basePackages = "com.able.iocbeanlifecicle")
 public class MainConfig {
 
-	@Bean(initMethod = "initPerson")
-	public Person person() {
-		Person person = new Person();
-		person.setName("旗木卡卡西");
-		person.setSex("男");
-		return person;
-	}
+//	@Bean(initMethod = "initPerson")
+//	public Person person() {
+//		Person person = new Person();
+//		person.setName("旗木卡卡西");
+//		person.setSex("男");
+//		return person;
+//	}
 }
 

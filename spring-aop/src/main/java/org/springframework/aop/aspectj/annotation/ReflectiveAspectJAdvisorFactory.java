@@ -316,7 +316,7 @@ public class ReflectiveAspectJAdvisorFactory extends AbstractAspectJAdvisorFacto
 				throw new UnsupportedOperationException(
 						"Unsupported advice type on method: " + candidateAdviceMethod);
 		}
-
+		//设置切面的名称 顺序 参数 。。。
 		// Now to configure the advice...
 		springAdvice.setAspectName(aspectName);
 		springAdvice.setDeclarationOrder(declarationOrder);

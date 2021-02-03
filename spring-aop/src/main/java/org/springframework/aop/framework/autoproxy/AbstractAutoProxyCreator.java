@@ -241,6 +241,29 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		return wrapIfNecessary(bean, beanName, cacheKey);
 	}
 
+
+
+	@Override
+	public boolean postProcessAfterInstantiation(Object bean, String beanName) {
+		return true;
+	}
+
+	@Override
+	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
+		return pvs;
+	}
+
+	@Override
+	public Object postProcessBeforeInitialization(Object bean, String beanName) {
+		return bean;
+	}
+
+	/**
+	 * 寻找切面 增强器
+	 * @param beanClass the class of the bean to be instantiated
+	 * @param beanName the name of the bean
+	 * @return
+	 */
 	@Override
 	public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) {
 		//构建我们的缓存key
@@ -279,23 +302,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 
 		return null;
 	}
-
-	@Override
-	public boolean postProcessAfterInstantiation(Object bean, String beanName) {
-		return true;
-	}
-
-	@Override
-	public PropertyValues postProcessProperties(PropertyValues pvs, Object bean, String beanName) {
-		return pvs;
-	}
-
-	@Override
-	public Object postProcessBeforeInitialization(Object bean, String beanName) {
-		return bean;
-	}
-
-	/**
+	/** 生成代理对象
 	 * Create a proxy with the configured interceptors if the bean is
 	 * identified as one to proxy by the subclass.
 	 * @see #getAdvicesAndAdvisorsForBean
@@ -483,7 +490,7 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 		}
 		//把我们的specificInterceptors数组中的Advisor转化为数组形式的
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
-		//为我们的代理工厂加入通知其
+		//为我们的代理工厂加入增强器
 		proxyFactory.addAdvisors(advisors);
 		//设置targetSource对象
 		proxyFactory.setTargetSource(targetSource);

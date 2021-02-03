@@ -123,7 +123,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 		}
 	}
 
-	/**
+	/** 在方法上找到aspectJ的注解
 	 * Find and return the first AspectJ annotation on the given method
 	 * (there <i>should</i> only be one anyway...).
 	 */
@@ -141,8 +141,10 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 
 	@Nullable
 	private static <A extends Annotation> AspectJAnnotation<A> findAnnotation(Method method, Class<A> toLookFor) {
+		//查找方法上的指定注解
 		A result = AnnotationUtils.findAnnotation(method, toLookFor);
 		if (result != null) {
+			//找到后对注解进行封装返回
 			return new AspectJAnnotation<>(result);
 		}
 		else {

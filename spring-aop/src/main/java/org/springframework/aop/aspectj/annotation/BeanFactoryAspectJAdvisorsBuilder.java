@@ -43,10 +43,14 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	private final ListableBeanFactory beanFactory;
 
 	private final AspectJAdvisorFactory advisorFactory;
-
+	/**
+	 * 保存所有的通知名称
+	 */
 	@Nullable
 	private volatile List<String> aspectBeanNames;
-
+	/**
+	 * 保存通知名称--》与通知下的增强器的map
+	 */
 	private final Map<String, List<Advisor>> advisorsCache = new ConcurrentHashMap<>();
 
 	private final Map<String, MetadataAwareAspectInstanceFactory> aspectFactoryCache = new ConcurrentHashMap<>();
@@ -126,13 +130,13 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
 								//获取该切面的所有通知 并封装成advisor增强
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
-								//加入到缓存 将asepectName--》classAdvisorsList
+								//加入到缓存 将aspectName--》classAdvisorsList
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);
 								}else {
 									this.aspectFactoryCache.put(beanName, factory);
 								}
-								advisors.addAll(classAdvisors);
+								advisors.addAll(classAdvisors);//将增强器添加到集合中
 							}else {
 								// Per target or per this.
 								if (this.beanFactory.isSingleton(beanName)) {
@@ -146,6 +150,7 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 							}
 						}
 					}
+					//赋值
 					this.aspectBeanNames = aspectNames;
 					return advisors;
 				}

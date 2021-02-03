@@ -802,7 +802,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 	}
 
-	/**
+	/**注册bean的后置处理器
 	 * Instantiate and register all BeanPostProcessor beans,
 	 * respecting explicit order if given.
 	 * <p>Must be called before any instantiation of application beans.
