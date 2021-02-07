@@ -62,12 +62,15 @@ public class AutoProxyRegistrar implements ImportBeanDefinitionRegistrar {
 		Set<String> annTypes = importingClassMetadata.getAnnotationTypes();
 		//遍历注解
 		for (String annType : annTypes) {
-			AnnotationAttributes candidate = AnnotationConfigUtils.attributesFor(importingClassMetadata, annType);//获取注解上的所有属性
+			//获取注解上的所有属性
+			AnnotationAttributes candidate = AnnotationConfigUtils.attributesFor(importingClassMetadata, annType);
 			if (candidate == null) {
 				continue;
 			}
-			Object mode = candidate.get("mode");//从所有属性map中获取mode属性值
-			Object proxyTargetClass = candidate.get("proxyTargetClass");//获取proxyTargetClass属性值
+			//从所有属性map中获取mode属性值
+			Object mode = candidate.get("mode");
+			//获取proxyTargetClass属性值
+			Object proxyTargetClass = candidate.get("proxyTargetClass");
 			if (mode != null && proxyTargetClass != null && AdviceMode.class == mode.getClass() &&
 					Boolean.class == proxyTargetClass.getClass()) {
 				candidateFound = true;

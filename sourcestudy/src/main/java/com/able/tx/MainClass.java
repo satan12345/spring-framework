@@ -15,10 +15,10 @@ import java.util.Iterator;
 public class MainClass {
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(TxConfig.class);
-		final Iterator<String> beanNamesIterator = ctx.getBeanFactory().getBeanNamesIterator();
-		while (beanNamesIterator.hasNext()) {
-			System.err.println("beanNamesIterator.next() = " + beanNamesIterator.next());
-		}
+//		final Iterator<String> beanNamesIterator = ctx.getBeanFactory().getBeanNamesIterator();
+//		while (beanNamesIterator.hasNext()) {
+//			System.err.println("beanNamesIterator.next() = " + beanNamesIterator.next());
+//		}
 		IPayService payService = ctx.getBean(IPayService.class);
 		payService.pay(1, 100);
 	}

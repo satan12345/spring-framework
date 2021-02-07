@@ -368,7 +368,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 			// Standard transaction demarcation with getTransaction and commit/rollback calls.
 			//有没有必要创建事务
 			TransactionInfo txInfo = createTransactionIfNecessary(ptm, txAttr, joinpointIdentification);
-
+			//记录返回值
 			Object retVal;
 			try {
 				//调用钩子函数进行回调目标方法
@@ -659,8 +659,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware, Init
 						"] after exception: " + ex);
 			}
 			//判断抛出的异常是不是我们需要回滚的异常
-			if (txInfo.transactionAttribute != null &&
-					txInfo.transactionAttribute.rollbackOn(ex)) {
+			if (txInfo.transactionAttribute != null && txInfo.transactionAttribute.rollbackOn(ex)) {
 				try {
 					//回滚
 					txInfo.getTransactionManager().rollback(txInfo.getTransactionStatus());

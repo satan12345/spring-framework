@@ -468,7 +468,7 @@ public class AdvisedSupport extends ProxyConfig implements Advised {
 	}
 
 
-	/**
+	/**构建缓存key-> 从缓存中去拿 --> 拿不到自己去去找-->然后放入缓存
 	 * Determine a list of {@link org.aopalliance.intercept.MethodInterceptor} objects
 	 * for the given method, based on this configuration.
 	 * @param method the proxied method

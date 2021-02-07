@@ -346,7 +346,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		// 尝试获取一个事务对象
 		Object transaction = doGetTransaction();
 		boolean debugEnabled = logger.isDebugEnabled();
-
+		//是否存在事务
 		if (isExistingTransaction(transaction)) {
 			// Existing transaction found -> check propagation behavior to find out how to behave.
 			return handleExistingTransaction(def, transaction, debugEnabled);
@@ -421,7 +421,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 		return status;
 	}
 
-	/**
+	/**已经存在事务
 	 * Create a TransactionStatus for an existing transaction.
 	 */
 	private TransactionStatus handleExistingTransaction(
@@ -447,7 +447,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
 			if (debugEnabled) {
 				logger.debug("Suspending current transaction, creating new transaction with name [" +
 						definition.getName() + "]");
-			}
+			}//挂起原来的事务 将原来的事务缓存起来
 			SuspendedResourcesHolder suspendedResources = suspend(transaction);
 			try {
 				return startTransaction(definition, transaction, debugEnabled, suspendedResources);

@@ -26,8 +26,9 @@ public class PayService implements IPayService {
 	public void pay(Integer accountId, int money) {
 
 		int retVal = accountDao.updateAccountBlance(accountId, money);
-		((IPayService) AopContext.currentProxy()).updateProductStore(1);
-//		System.out.println(1/0);
+		//((IPayService) AopContext.currentProxy()).updateProductStore(1);
+		int a=0;
+		System.out.println(1/a);
 	}
 
 	@Override

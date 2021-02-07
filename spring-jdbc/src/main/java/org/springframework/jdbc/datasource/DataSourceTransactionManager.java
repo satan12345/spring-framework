@@ -285,7 +285,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 				if (logger.isDebugEnabled()) {
 					logger.debug("Switching JDBC Connection [" + con + "] to manual commit");
 				}
-				//设置不自动提交 即开启事务
+				//关闭自动提交
 				con.setAutoCommit(false);
 			}
 			//判断事务为只读事务
@@ -415,7 +415,7 @@ public class DataSourceTransactionManager extends AbstractPlatformTransactionMan
 	 */
 	protected void prepareTransactionalConnection(Connection con, TransactionDefinition definition)
 			throws SQLException {
-
+		//判断事务是否为只读事务
 		if (isEnforceReadOnly() && definition.isReadOnly()) {
 			try (Statement stmt = con.createStatement()) {
 				stmt.executeUpdate("SET TRANSACTION READ ONLY");

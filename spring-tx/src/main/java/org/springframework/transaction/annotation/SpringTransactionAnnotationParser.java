@@ -46,10 +46,12 @@ public class SpringTransactionAnnotationParser implements TransactionAnnotationP
 	//spring注解的解析器
 	@Override
 	@Nullable
-	public TransactionAttribute parseTransactionAnnotation(AnnotatedElement element) {//从element对象中获取@Transaction注解 然后把注解属性封装到AnnotationAttributes中
+	public TransactionAttribute parseTransactionAnnotation(AnnotatedElement element) {
+		//从element对象中获取@Transaction注解 然后把注解属性封装到AnnotationAttributes中
 		AnnotationAttributes attributes = AnnotatedElementUtils.findMergedAnnotationAttributes(
 				element, Transactional.class, false, false);
-		if (attributes != null) {//解析出真正的事务属性对象
+		if (attributes != null) {
+			//将Transactional注解的属性解析出来封装成对象返回
 			return parseTransactionAnnotation(attributes);
 		}
 		else {

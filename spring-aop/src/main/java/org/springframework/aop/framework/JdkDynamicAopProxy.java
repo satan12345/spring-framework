@@ -176,15 +176,18 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			else if (method.getDeclaringClass() == DecoratingProxy.class) {
 				// There is only getDecoratedClass() declared -> dispatch to proxy config.
 				return AopProxyUtils.ultimateTargetClass(this.advised);
-			}//如果目标对象实现了Advised接口 则不会对其应用切面方法增强 直接执行方法
-			else if (!this.advised.opaque && method.getDeclaringClass().isInterface() &&
+			}else if (!this.advised.opaque && method.getDeclaringClass().isInterface() &&
 					method.getDeclaringClass().isAssignableFrom(Advised.class)) {
 				// Service invocations on ProxyConfig with the proxy config...
+				//如果目标对象实现了Advised接口 则不会对其应用切面方法增强 直接执行方法
 				return AopUtils.invokeJoinpointUsingReflection(this.advised, method, args);
 			}
 
+			//返回值
 			Object retVal;
-			//是否暴露代理对象 如果为true 则把代理对象暴露到线程变量中去
+			/**
+			 * 是否暴露代理对象 如果为true 则把代理对象暴露到线程变量中去
+			 */
 			if (this.advised.exposeProxy) {
 				// Make invocation available if necessary.
 				oldProxy = AopContext.setCurrentProxy(proxy);
@@ -192,23 +195,27 @@ final class JdkDynamicAopProxy implements AopProxy, InvocationHandler, Serializa
 			}
 
 			// Get as late as possible to minimize the time we "own" the target,
-			// in case it comes from a pool. 获取我们的目标对象
+			// in case it comes from a pool.
+			//获取我们的目标对象
 			target = targetSource.getTarget();
-			Class<?> targetClass = (target != null ? target.getClass() : null);//获取我们目标对象的class
+			//获取我们目标对象的class
+			Class<?> targetClass = (target != null ? target.getClass() : null);
 			//把我们的代理对象转化成拦截器链 通过责任链模式 依次调用
+			//将增强器集合转换为拦截器链
 			// Get the interception chain for this method. 将advisor转换为interceptor调用链
 			List<Object> chain = this.advised.getInterceptorsAndDynamicInterceptionAdvice(method, targetClass);
 			//责任链列表为空 则直接调用目标方法
 			// Check whether we have any advice. If we don't, we can fallback on direct
 			// reflective invocation of the target, and avoid creating a MethodInvocation.
 			if (chain.isEmpty()) {
+				//如果拦截器链为空 则进行反射调用
 				// We can skip creating a MethodInvocation: just invoke the target directly
 				// Note that the final invoker must be an InvokerInterceptor so we know it does
 				// nothing but a reflective operation on the target, and no hot swapping or fancy proxying.
 				Object[] argsToUse = AopProxyUtils.adaptArgumentsIfNecessary(method, args);
+				//直接反射调用
 				retVal = AopUtils.invokeJoinpointUsingReflection(target, method, argsToUse);
-			}
-			else {
+			}else {
 				// We need to create a method invocation... 创建一个方法调用对象 并执行调用
 				MethodInvocation invocation =
 						new ReflectiveMethodInvocation(proxy, target, method, args, targetClass, chain);

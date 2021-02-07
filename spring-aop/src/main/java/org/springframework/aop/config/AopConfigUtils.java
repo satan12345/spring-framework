@@ -65,6 +65,7 @@ public abstract class AopConfigUtils {
 	}
 
 
+	//注册事务组件
 	@Nullable
 	public static BeanDefinition registerAutoProxyCreatorIfNecessary(BeanDefinitionRegistry registry) {
 		return registerAutoProxyCreatorIfNecessary(registry, null);

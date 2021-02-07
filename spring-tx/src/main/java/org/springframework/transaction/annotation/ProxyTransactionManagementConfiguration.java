@@ -37,7 +37,7 @@ import org.springframework.transaction.interceptor.TransactionInterceptor;
  */
 
 /**
- * 注册了一个配置类  往容器中注册了组件
+ * 注册了一个配置类  往容器中注册了3个直接组件
  */
 @Configuration(proxyBeanMethods = false)
 @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
@@ -45,7 +45,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 
 
 	/**
-	 * 用户拦截事务方法执行的
+	 * 事务拦截器
 	 * 声明advise
 	 * @param transactionAttributeSource
 	 * @return
@@ -73,6 +73,7 @@ public class ProxyTransactionManagementConfiguration extends AbstractTransaction
 	}
 	/**
 	 * 导入了关于事务的切面信息
+	 * 通知增强器
 	 */
 	@Bean(name = TransactionManagementConfigUtils.TRANSACTION_ADVISOR_BEAN_NAME)
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)

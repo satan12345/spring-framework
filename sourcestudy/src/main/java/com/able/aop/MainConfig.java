@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * @param
@@ -17,6 +18,10 @@ import org.springframework.context.annotation.Import;
  */
 //开启切面自动创建
 @EnableAspectJAutoProxy(exposeProxy = true)
+/**
+ * 开启事务
+ */
+@EnableTransactionManagement
 @Import(value = {MyImportBeanDefinitionRegistrar.class})
 
 public class MainConfig {
@@ -30,10 +35,10 @@ public class MainConfig {
 	public LogAspect logAspect(){
 		return new LogAspect();
 	}
-	@Bean
-	public LogAspectAnother logAspectAnother(){
-		return new LogAspectAnother();
-	}
+//	@Bean
+//	public LogAspectAnother logAspectAnother(){
+//		return new LogAspectAnother();
+//	}
 
 }
 

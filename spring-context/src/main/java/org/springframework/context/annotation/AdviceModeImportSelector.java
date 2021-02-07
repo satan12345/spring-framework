@@ -66,7 +66,7 @@ public abstract class AdviceModeImportSelector<A extends Annotation> implements 
 	public final String[] selectImports(AnnotationMetadata importingClassMetadata) {
 		Class<?> annType = GenericTypeResolver.resolveTypeArgument(getClass(), AdviceModeImportSelector.class);
 		Assert.state(annType != null, "Unresolvable type argument for AdviceModeImportSelector");
-
+		//获取注解的所有属性
 		AnnotationAttributes attributes = AnnotationConfigUtils.attributesFor(importingClassMetadata, annType);
 		if (attributes == null) {
 			throw new IllegalArgumentException(String.format(
