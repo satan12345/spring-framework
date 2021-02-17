@@ -1336,7 +1336,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (currentlyCreatedBean != null) {
 			registerDependentBean(beanName, currentlyCreatedBean);
 		}
-
+		//获取factoryBean实例
 		return super.getObjectForBeanInstance(beanInstance, name, beanName, mbd);
 	}
 

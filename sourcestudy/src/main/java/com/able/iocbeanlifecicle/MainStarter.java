@@ -32,7 +32,11 @@ public class MainStarter {
 //		UserMapper userMapper = (UserMapper) ctx.getBean("userMapperFactoryBean");
 //		final int i = userMapper.selectOne(1);
 //		System.err.println(i);
-		C c = ctx.getBean(C.class);
+		String[] beanDefinitionNames = ctx.getBeanDefinitionNames();
+		for (String beanDefinitionName : beanDefinitionNames) {
+			System.err.println(beanDefinitionName);
+		}
+		C c = (C) ctx.getBean("myTestFactoryBean");
 		System.out.println("c = " + c);
 
 	}
