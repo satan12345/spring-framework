@@ -36,7 +36,7 @@ public class MainStarter {
 		for (String beanDefinitionName : beanDefinitionNames) {
 			System.err.println(beanDefinitionName);
 		}
-		C c = (C) ctx.getBean("myTestFactoryBean");
+		C c = (C) ctx.getBean("&myTestFactoryBean");
 		System.out.println("c = " + c);
 
 	}

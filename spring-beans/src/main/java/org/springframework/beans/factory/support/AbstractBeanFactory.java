@@ -242,7 +242,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	@SuppressWarnings("unchecked")
 	protected <T> T doGetBean(final String name, @Nullable final Class<T> requiredType,
 			@Nullable final Object[] args, boolean typeCheckOnly) throws BeansException {
-		//这里传送进来的name 可能是别名   所以在这里需要转换成bean的Id 也就是beanName
+		//这里传送进来的name 可能是别名 也可能是工厂bean    所以在这里需要转换成bean的Id 也就是beanName
 		final String beanName = transformedBeanName(name);
 		Object bean;
 		//尝试从缓存中获取对象
@@ -1804,6 +1804,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
 		// Don't let calling code try to dereference the factory if the bean isn't a factory.
 		if (BeanFactoryUtils.isFactoryDereference(name)) {
+			//name是&开头的 确定获取的是factory对象本身
 			if (beanInstance instanceof NullBean) {
 				return beanInstance;
 			}
