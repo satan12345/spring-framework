@@ -216,7 +216,9 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 
 	/** Whether to log potentially sensitive info (request params at DEBUG + headers at TRACE). */
 	private boolean enableLoggingRequestDetails = false;
-
+	/**
+	 * dispatcherServlet容器
+	 */
 	/** WebApplicationContext for this servlet. */
 	@Nullable
 	private WebApplicationContext webApplicationContext;
@@ -575,13 +577,16 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			if (wac instanceof ConfigurableWebApplicationContext) {
 				ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) wac;
 				if (!cwac.isActive()) {
+					//判断是否激活
 					// The context has not yet been refreshed -> provide services such as
 					// setting the parent context, setting the application context id, etc
 					if (cwac.getParent() == null) {
 						// The context instance was injected without an explicit parent -> set
 						// the root application context (if any; may be null) as the parent
+						//设置父容器
 						cwac.setParent(rootContext);
 					}
+					//设置刷新 子容器
 					configureAndRefreshWebApplicationContext(cwac);
 				}
 			}
@@ -690,8 +695,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// -> assign a more useful id based on available information
 			if (this.contextId != null) {
 				wac.setId(this.contextId);
-			}
-			else {
+			}else {
 				// Generate default id...
 				wac.setId(ConfigurableWebApplicationContext.APPLICATION_CONTEXT_ID_PREFIX +
 						ObjectUtils.getDisplayString(getServletContext().getContextPath()) + '/' + getServletName());

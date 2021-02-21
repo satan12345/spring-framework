@@ -55,6 +55,7 @@ import org.springframework.util.CollectionUtils;
  * @see #setMappings
  * @see #setUrlMap
  * @see BeanNameUrlHandlerMapping
+ * url映射的handlerMapping
  */
 public class SimpleUrlHandlerMapping extends AbstractUrlHandlerMapping {
 

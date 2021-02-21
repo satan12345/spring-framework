@@ -33,6 +33,17 @@ import javax.servlet.ServletContextListener;
  * @since 17.02.2003
  * @see #setContextInitializers
  * @see org.springframework.web.WebApplicationInitializer
+ *
+ * web.xml
+ * <context-param>
+ *         <param-name>contextConfigLocation</param-name>
+ *         <param-value>classpath:spring/beans.xml</param-value>
+ * </context-param>
+ *
+ *<listener>
+ *   <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+ *</listener>
+ *
  */
 public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
 
@@ -95,11 +106,12 @@ public class ContextLoaderListener extends ContextLoader implements ServletConte
 	}
 
 
-	/**
+	/**初始化根容器的web上下文对象
 	 * Initialize the root web application context.
 	 */
 	@Override
 	public void contextInitialized(ServletContextEvent event) {
+		//初始化web容器的上下文
 		initWebApplicationContext(event.getServletContext());
 	}
 

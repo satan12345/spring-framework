@@ -92,6 +92,12 @@ public class ContextLoader {
 	 */
 	public static final String CONTEXT_ID_PARAM = "contextId";
 
+
+	/**
+	 * Config param for the root WebApplicationContext implementation class to use: {@value}.
+	 * @see #determineContextClass(ServletContext)
+	 */
+	public static final String CONTEXT_CLASS_PARAM = "contextClass";
 	/**
 	 * Name of servlet context parameter (i.e., {@value}) that can specify the
 	 * config location for the root context, falling back to the implementation's
@@ -99,12 +105,6 @@ public class ContextLoader {
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext#DEFAULT_CONFIG_LOCATION
 	 */
 	public static final String CONFIG_LOCATION_PARAM = "contextConfigLocation";
-
-	/**
-	 * Config param for the root WebApplicationContext implementation class to use: {@value}.
-	 * @see #determineContextClass(ServletContext)
-	 */
-	public static final String CONTEXT_CLASS_PARAM = "contextClass";
 
 	/**
 	 * Config param for {@link ApplicationContextInitializer} classes to use
@@ -163,7 +163,7 @@ public class ContextLoader {
 	private static volatile WebApplicationContext currentContext;
 
 
-	/**
+	/**根容器
 	 * The root WebApplicationContext instance that this loader manages.
 	 */
 	@Nullable
@@ -273,25 +273,48 @@ public class ContextLoader {
 		long startTime = System.currentTimeMillis();
 
 		try {
+			/**
+			 * 在创建xml版本的时候context是空的 所以我们在这里需要创建根对象
+			 */
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.
-			if (this.context == null) {
-				this.context = createWebApplicationContext(servletContext);
-			}
 			if (this.context instanceof ConfigurableWebApplicationContext) {
+				if (this.context == null) {
+					/**
+					 * 注意：由于xml版本中context为空 所以这个if逻辑是用来创建我们的根容器的
+					 * xml版本会调用无参构造器 所以context为空
+					 * 注解版本会执行这个代码
+					 * ContextLoaderListener listener = new ContextLoaderListener(rootAppContext);
+					 * 会将创建好的根容器传递进来
+					 */
+					this.context = createWebApplicationContext(servletContext);
+				}
+
 				ConfigurableWebApplicationContext cwac = (ConfigurableWebApplicationContext) this.context;
+				/**
+				 * 判断root容器有没有激活
+				 * 即有没有调用refresh方法
+				 */
 				if (!cwac.isActive()) {
+					//还没有激活
+					//判断根容器的父容器是否存在
 					// The context has not yet been refreshed -> provide services such as
 					// setting the parent context, setting the application context id, etc
 					if (cwac.getParent() == null) {
 						// The context instance was injected without an explicit parent ->
 						// determine parent for root web application context, if any.
+						//设置父容器
 						ApplicationContext parent = loadParentContext(servletContext);
 						cwac.setParent(parent);
 					}
+					//刷新和配置我们的根容器对象
 					configureAndRefreshWebApplicationContext(cwac, servletContext);
 				}
 			}
+			/**
+			 * 把我们的spring上下文保存到应用上下文对象中
+			 * 方便我们在Spring web上下文对象实例化过重做从servletContext中取出来
+			 */
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
@@ -398,6 +421,7 @@ public class ContextLoader {
 		}
 
 		customizeContext(sc, wac);
+		//刷新根容器
 		wac.refresh();
 	}
 

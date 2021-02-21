@@ -108,6 +108,15 @@ import org.springframework.util.ReflectionUtils;
  * @since 3.1
  * @see #onStartup(Set, ServletContext)
  * @see WebApplicationInitializer
+ * spring应用一启动(tomcat启动的时候 就会扫描当前应用下导入的jar包的MET-INF/service的
+ * javax.servlet.ServletContainerInitializer名称中的内容 该内容是ServletContainerInitializer的
+ * 实现类的全类名路径，然后会调用该实现类的onStartup方法 并且我们可以在ServletContainerInitializer的
+ * 实现类上标注@HandlesTypes,配置WebApplicationInitializer接口 那么所有WebApplicationInitializer接口的
+ * 实现类都会被传递到onStartup方法的入参中 然后判断传递进来的WebApplicationInitializer的实现是不是接口或者
+ * 不是抽象类 那么就会进行通过反射调用生成对象
+ */
+/**
+ * 感兴趣的接口 该接口的所有实现类会被传递到onStartup 的第一个参数
  */
 @HandlesTypes(WebApplicationInitializer.class)
 public class SpringServletContainerInitializer implements ServletContainerInitializer {
@@ -141,9 +150,11 @@ public class SpringServletContainerInitializer implements ServletContainerInitia
 	/**
 	 * 方法实现说明：容器启动的时候会调用该方法 并且传入@HandlesTypes(WebApplicationInitializer.class)类型的
 	 * 所有子类作为入参
+	 * @HandlesTypes(WebApplicationInitializer.class)
 	 * @param webAppInitializerClasses 感兴趣类的集合
 	 * @param servletContext 我们应用的上下文对象
 	 * @throws ServletException
+	 *
 	 */
 	@Override
 	public void onStartup(@Nullable Set<Class<?>> webAppInitializerClasses, ServletContext servletContext)

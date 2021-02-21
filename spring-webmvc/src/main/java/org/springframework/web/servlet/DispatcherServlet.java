@@ -158,6 +158,21 @@ import org.springframework.web.util.WebUtils;
  * @see org.springframework.web.HttpRequestHandler
  * @see org.springframework.web.servlet.mvc.Controller
  * @see org.springframework.web.context.ContextLoaderListener
+ *
+ *web.xml
+ * <servlet>
+ *         <servlet-name>dispatcher</servlet-name>
+ *         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+ *         <init-param>
+ *             <param-name>contextConfigLocation</param-name>
+ *             <param-value>classpath:spring/dispatcher.xml</param-value>
+ *         </init-param>
+ *         <load-on-startup>1</load-on-startup>
+ *     </servlet>
+ *     <servlet-mapping>
+ *         <servlet-name>dispatcher</servlet-name>
+ *         <url-pattern>/</url-pattern>
+ *     </servlet-mapping>
  */
 @SuppressWarnings("serial")
 public class DispatcherServlet extends FrameworkServlet {
@@ -506,17 +521,22 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
 	 */
 	protected void initStrategies(ApplicationContext context) {
-
+		//初始化我们web上下文帝乡的 用于文件上传下载的解析器对象
 		initMultipartResolver(context);
+		//初始化我们web上下文对象用于处理国际化资源的
 		initLocaleResolver(context);
+		//主体解析器对象初始化
 		initThemeResolver(context);
 		/**
 		 * 初始化handlerMapping组件
 		 */
 		initHandlerMappings(context);
+		//初始化我们的handlerAdapters
 		initHandlerAdapters(context);
+		//实例化我们处理器异常解析器
 		initHandlerExceptionResolvers(context);
 		initRequestToViewNameTranslator(context);
+		//初始化视图解析器
 		initViewResolvers(context);
 		initFlashMapManager(context);
 	}

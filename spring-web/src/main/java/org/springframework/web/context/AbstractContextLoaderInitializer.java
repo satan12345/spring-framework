@@ -51,17 +51,21 @@ public abstract class AbstractContextLoaderInitializer implements WebApplication
 		registerContextLoaderListener(servletContext);
 	}
 
-	/**
+	/**注册上下文监听器对象
 	 * Register a {@link ContextLoaderListener} against the given servlet context. The
 	 * {@code ContextLoaderListener} is initialized with the application context returned
 	 * from the {@link #createRootApplicationContext()} template method.
 	 * @param servletContext the servlet context to register the listener against
+	 *       1 创建我们的根容器(此时根容器还是空的)
+	 *       2 new了我们的 ContextLoaderListener
+	 *       3 把我们的根配置类保存到我们的根容器中
+	 *       4 把我们的ContxtLoaderListener注册到servletContext
 	 */
 	protected void registerContextLoaderListener(ServletContext servletContext) {
 		//创建我们的根的上下文环境 WebApplicationContext(AnnotationConfigWebApplicationContext)对象
 		WebApplicationContext rootAppContext = createRootApplicationContext();
 		if (rootAppContext != null) {
-			//创建一个容器初始化监听器对象
+			//创建一个容器初始化监听器对象 会在监听器中初始化容器的上下文对象
 			ContextLoaderListener listener = new ContextLoaderListener(rootAppContext);
 			/**
 			 * 获取根应用的getRootApplicationContextInitializers()
