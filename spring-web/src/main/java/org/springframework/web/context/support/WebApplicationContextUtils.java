@@ -98,6 +98,7 @@ public abstract class WebApplicationContextUtils {
 	 */
 	@Nullable
 	public static WebApplicationContext getWebApplicationContext(ServletContext sc) {
+		//获取绑定在servletContext中的根容器对象
 		return getWebApplicationContext(sc, WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
 	}
 
@@ -110,6 +111,9 @@ public abstract class WebApplicationContextUtils {
 	@Nullable
 	public static WebApplicationContext getWebApplicationContext(ServletContext sc, String attrName) {
 		Assert.notNull(sc, "ServletContext must not be null");
+		/**
+		 * 从servletContext容器中获取属性(该属性用于绑定根容器)
+		 */
 		Object attr = sc.getAttribute(attrName);
 		if (attr == null) {
 			return null;

@@ -569,6 +569,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		//获取根容器
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
+
 		WebApplicationContext wac = null;
 		//首次进入webApplicationContext容器肯定为null
 		if (this.webApplicationContext != null) {
@@ -596,12 +597,12 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			// has been registered in the servlet context. If one exists, it is assumed
 			// that the parent context (if any) has already been set and that the
 			// user has performed any initialization such as setting the context id
-			//
+			//从servletContext中查找web容器
 			wac = findWebApplicationContext();
 		}
 		if (wac == null) {
 			// No context instance is defined for this servlet -> create a local one
-			//创建web容器
+			//在servlet上下文中没有找到web容器的实例  本地需要创建一个
 			wac = createWebApplicationContext(rootContext);
 		}
 
@@ -635,10 +636,12 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 */
 	@Nullable
 	protected WebApplicationContext findWebApplicationContext() {
+		//获取绑定web容器的servletContext属性
 		String attrName = getContextAttribute();
 		if (attrName == null) {
 			return null;
 		}
+		//
 		WebApplicationContext wac =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext(), attrName);
 		if (wac == null) {
@@ -706,7 +709,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		//设置servlet配置
 		wac.setServletConfig(getServletConfig());
 		wac.setNamespace(getNamespace());
-		//设置一个监听器 （容器刷新时调用）
+		//添加一个监听器 （容器刷新时的一个回调 会再回调中执行onrefresh方法 然后初始化springmvc的相关组件）
 		wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
 
 		// The wac environment's #initPropertySources will be called in any case when the context
@@ -859,7 +862,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @param event the incoming ApplicationContext event
 	 */
 	public void onApplicationEvent(ContextRefreshedEvent event) {
-		//打一个标记咯
+		//标记已经调用过ononRefresh方法 即容器已经刷新
 		this.refreshEventReceived = true;
 		//加锁
 		synchronized (this.onRefreshMonitor) {
