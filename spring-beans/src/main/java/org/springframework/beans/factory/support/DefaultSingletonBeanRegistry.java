@@ -245,7 +245,9 @@ public class DefaultSingletonBeanRegistry extends SimpleAliasRegistry implements
 						 * 所以在调用singletonFactory.getObject 则会执行传入的函数（该函数会执行beanPostProcessor）
 						 */
 						singletonObject = singletonFactory.getObject();
+						//添加到二级缓存池
 						this.earlySingletonObjects.put(beanName, singletonObject);
+						//从三级缓存池中移除
 						this.singletonFactories.remove(beanName);
 					}
 				}

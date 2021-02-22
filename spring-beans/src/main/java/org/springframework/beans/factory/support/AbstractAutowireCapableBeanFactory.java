@@ -665,11 +665,21 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		}
 
 		if (earlySingletonExposure) {
+			//从缓存中再拿一次(在循环依赖的情况下 再次获取的时候会把三级缓存放到二级缓存中)
 			Object earlySingletonReference = getSingleton(beanName, false);
 			if (earlySingletonReference != null) {
+
 				if (exposedObject == bean) {
+					/**
+					 * 如果提前暴露的对象和经过了完整的生命周期后的对象相等
+					 * 则把代理对象赋值给exposedObject
+					 */
 					exposedObject = earlySingletonReference;
 				} else if (!this.allowRawInjectionDespiteWrapping && hasDependentBean(beanName)) {
+					/**
+					 * 如果提前暴露的对象和经过了完整的生命周期后的对象不相等
+					 *
+					 */
 					String[] dependentBeans = getDependentBeans(beanName);
 					Set<String> actualDependentBeans = new LinkedHashSet<>(dependentBeans.length);
 					for (String dependentBean : dependentBeans) {
@@ -1020,7 +1030,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
 			//获取所有的beanPostProcessor 进行遍历
 			for (BeanPostProcessor bp : getBeanPostProcessors()) {
-				//判断后置处理器是否实现了SmartInstantiationAwareBeanPostProcessor接口
+				//判断后置处理器是否实现了SmartInstantiationAwareBeanPostProcessor接口(即需要进行AOP)
 				if (bp instanceof SmartInstantiationAwareBeanPostProcessor) {
 					//进行强制转换
 					SmartInstantiationAwareBeanPostProcessor ibp = (SmartInstantiationAwareBeanPostProcessor) bp;
