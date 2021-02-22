@@ -304,6 +304,10 @@ public class DispatcherServlet extends FrameworkServlet {
 		// by application developers.
 
 		try {
+			/**
+			 * 获取 dispatcherServlet类所在的包名为basePath 然后 加上 DEFAULT_STRATEGIES_PATH 为完整路径获 进行资源加载
+			 * 即跟dispatcherServlet在同一目录下的DispatcherServlet.properties这个资源文件
+			 */
 			ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, DispatcherServlet.class);
 			defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
 		}
@@ -342,6 +346,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	private ThemeResolver themeResolver;
 
+	/**
+	 * handlerMappings 集合
+	 */
 	/** List of HandlerMappings used by this servlet. */
 	@Nullable
 	private List<HandlerMapping> handlerMappings;
@@ -521,7 +528,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
 	 */
 	protected void initStrategies(ApplicationContext context) {
-		//初始化我们web上下文帝乡的 用于文件上传下载的解析器对象
+		//context对象为web容器
+		//初始化我们web上下文对象中 用于文件上传下载的解析器对象
 		initMultipartResolver(context);
 		//初始化我们web上下文对象用于处理国际化资源的
 		initLocaleResolver(context);
@@ -630,6 +638,7 @@ public class DispatcherServlet extends FrameworkServlet {
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerMapping.class,
 							true, false);
 			if (!matchingBeans.isEmpty()) {
+				//如果找到 则进行排序
 				this.handlerMappings = new ArrayList<>(matchingBeans.values());
 				// We keep HandlerMappings in sorted order.
 				AnnotationAwareOrderComparator.sort(this.handlerMappings);
@@ -647,7 +656,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// a default HandlerMapping if no other mappings are found.
 		//默认的策略
 		if (this.handlerMappings == null) {
-			//获取默认的HandlerMapping
+			//获取默认的HandlerMapping 并赋值给成员属性
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No HandlerMappings declared for servlet '" + getServletName() +
@@ -908,8 +917,9 @@ public class DispatcherServlet extends FrameworkServlet {
 				try {
 					//根据类的全类名获取Class信息
 					Class<?> clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());
-					//创建class
+					//在web容器中创建bean
 					Object strategy = createDefaultStrategy(context, clazz);
+					//添加到集合中并返回
 					strategies.add((T) strategy);
 				}
 				catch (ClassNotFoundException ex) {
@@ -942,6 +952,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected Object createDefaultStrategy(ApplicationContext context, Class<?> clazz) {
 		//在容器中创建bean
+		//在创建过程中会调用相关的beanPostProcessor
 		return context.getAutowireCapableBeanFactory().createBean(clazz);
 	}
 
