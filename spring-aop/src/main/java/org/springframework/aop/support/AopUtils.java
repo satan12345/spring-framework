@@ -132,14 +132,18 @@ public abstract class AopUtils {
 		if (targetType == null) {
 			return method;
 		}
+
 		Method methodToUse = MethodIntrospector.selectInvocableMethod(method, targetType);
 		/**
 		 * 方法私有的
 		 * 非静态的
-		 * 是spring代理
+		 * 是spring代理类派生出来的
 		 * 则抛出异常
+		 * 即方法需要是public
 		 */
-		if (Modifier.isPrivate(methodToUse.getModifiers()) && !Modifier.isStatic(methodToUse.getModifiers()) &&
+		if (Modifier.isPrivate(methodToUse.getModifiers())
+				&&
+				!Modifier.isStatic(methodToUse.getModifiers()) &&
 				SpringProxy.class.isAssignableFrom(targetType)) {
 			throw new IllegalStateException(String.format(
 					"Need to invoke method '%s' found on proxy for target class '%s' but cannot " +

@@ -112,6 +112,7 @@ public final class MethodIntrospector {
 	 * target type (typically due to a proxy mismatch)
 	 */
 	public static Method selectInvocableMethod(Method method, Class<?> targetType) {
+		//方法所属的类是targetType所派生出来的
 		if (method.getDeclaringClass().isAssignableFrom(targetType)) {
 			return method;
 		}

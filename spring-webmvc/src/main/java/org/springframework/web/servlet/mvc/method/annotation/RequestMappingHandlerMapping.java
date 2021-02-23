@@ -176,6 +176,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	}
 
 	/**
+	 * 实现InitializingBean 接口 重写afterPropertiesSet方法
 	 * 属性赋值完后 回调
 	 */
 	@Override
@@ -301,10 +302,13 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 */
 	@Nullable
 	private RequestMappingInfo createRequestMappingInfo(AnnotatedElement element) {
-		///找出元素上的@RequestMapping注解
-		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
 		/**
-		 * 判断element是不是一个类
+		 * 找出元素上的@RequestMapping注解
+		 */
+		RequestMapping requestMapping = AnnotatedElementUtils.findMergedAnnotation(element, RequestMapping.class);
+
+		/**
+		 * 判断element是类 还是方法 然后执行不同的代码
 		 * 然后进行强转 获取自定义的条件
 		 */
 		RequestCondition<?> condition = (element instanceof Class ?

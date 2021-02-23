@@ -894,8 +894,14 @@ public abstract class ClassUtils {
 	 * @return the user-defined class
 	 */
 	public static Class<?> getUserClass(Class<?> clazz) {
+
 		if (clazz.getName().contains(CGLIB_CLASS_SEPARATOR)) {
+			/**
+			 * 类的全类名中包含$$ 即被cglib动态代理过
+			 * 则获取他的父类 即被代理的那个对象类型
+			 */
 			Class<?> superclass = clazz.getSuperclass();
+			//父类不为空 且不是Object类型
 			if (superclass != null && superclass != Object.class) {
 				return superclass;
 			}

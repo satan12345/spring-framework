@@ -682,8 +682,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// We keep HandlerAdapters in sorted order.
 				AnnotationAwareOrderComparator.sort(this.handlerAdapters);
 			}
-		}
-		else {
+		}else {
 			try {
 				HandlerAdapter ha = context.getBean(HANDLER_ADAPTER_BEAN_NAME, HandlerAdapter.class);
 				this.handlerAdapters = Collections.singletonList(ha);
