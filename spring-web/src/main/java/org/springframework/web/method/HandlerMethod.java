@@ -63,14 +63,18 @@ public class HandlerMethod {
 
 	/** Logger that is available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
-
+	/**
+	 * handler 即 controller 也可能是 beanName
+	 */
 	private final Object bean;
 
 	@Nullable
 	private final BeanFactory beanFactory;
 
 	private final Class<?> beanType;
-
+	/**
+	 * controller下的方法
+	 */
 	private final Method method;
 
 	private final Method bridgedMethod;
@@ -107,6 +111,7 @@ public class HandlerMethod {
 		this.bridgedMethod = BridgeMethodResolver.findBridgedMethod(method);
 		//初始化参数列表
 		this.parameters = initMethodParameters();
+		//计算响应状态注解
 		evaluateResponseStatus();
 		this.description = initDescription(this.beanType, this.method);
 	}

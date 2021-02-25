@@ -579,10 +579,14 @@ public final class RequestMappingInfo implements RequestCondition<RequestMapping
 	 * @see Builder#options
 	 */
 	public static class BuilderConfiguration {
-
+		/**
+		 * 路径帮助工具类
+		 */
 		@Nullable
 		private UrlPathHelper urlPathHelper;
-
+		/**
+		 * 路径匹配工具类
+		 */
 		@Nullable
 		private PathMatcher pathMatcher;
 

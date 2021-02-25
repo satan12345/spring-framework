@@ -315,7 +315,9 @@ public class DispatcherServlet extends FrameworkServlet {
 			throw new IllegalStateException("Could not load '" + DEFAULT_STRATEGIES_PATH + "': " + ex.getMessage());
 		}
 	}
-
+	/**
+	 * 主动发现 还是从容器中获取名为handlerMapping的bean
+	 */
 	/** Detect all HandlerMappings or just expect "handlerMapping" bean?. */
 	private boolean detectAllHandlerMappings = true;
 
@@ -515,7 +517,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	}
 
 
-	/**
+	/**重写父类中的方法
 	 * This implementation calls {@link #initStrategies}.
 	 */
 	@Override
@@ -523,7 +525,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		initStrategies(context);
 	}
 
-	/** 初始化springMVC的9大组件
+	/** TODO 初始化springMVC的9大组件的入口
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
 	 */
@@ -556,6 +558,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initMultipartResolver(ApplicationContext context) {
 		try {
+			//容器中获取multipartResolver 文件上传解析器 赋值给属性
 			this.multipartResolver = context.getBean(MULTIPART_RESOLVER_BEAN_NAME, MultipartResolver.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Detected " + this.multipartResolver);
@@ -580,6 +583,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initLocaleResolver(ApplicationContext context) {
 		try {
+			//从web容器中赋值 国际化处理器类
 			this.localeResolver = context.getBean(LOCALE_RESOLVER_BEAN_NAME, LocaleResolver.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Detected " + this.localeResolver);
@@ -605,6 +609,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initThemeResolver(ApplicationContext context) {
 		try {
+			//主题处理器 赋值
 			this.themeResolver = context.getBean(THEME_RESOLVER_BEAN_NAME, ThemeResolver.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("Detected " + this.themeResolver);
@@ -645,6 +650,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}else {
 			try {
+				//从容器中查找 handlerMapping
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
 				this.handlerMappings = Collections.singletonList(hm);
 			}catch (NoSuchBeanDefinitionException ex) {
@@ -904,7 +910,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		 * 	org.springframework.web.servlet.function.support.RouterFunctionMapping
 		 * 	拿handlerMapping举例
 		 */
-		//获取接口的全类名
+		//获取接口的全类名 org.springframework.web.servlet.HandlerMapping
 		String key = strategyInterface.getName();
 		//获取属性值
 		String value = defaultStrategies.getProperty(key);
@@ -917,6 +923,10 @@ public class DispatcherServlet extends FrameworkServlet {
 					//根据类的全类名获取Class信息
 					Class<?> clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());
 					//在web容器中创建bean
+					/**
+					 * 容器中创建bean  会在bean创建完成后调用相应的方法扫描controller
+					 * RequestMappingHandlerMapping 实现了InitializingBean接口 会在回调中扫描controller
+					 */
 					Object strategy = createDefaultStrategy(context, clazz);
 					//添加到集合中并返回
 					strategies.add((T) strategy);
@@ -951,7 +961,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected Object createDefaultStrategy(ApplicationContext context, Class<?> clazz) {
 		//在容器中创建bean
-		//在创建过程中会调用相关的beanPostProcessor
+		/**
+		 * 在创建过程中会调用相关的接口
+		 */
 		return context.getAutowireCapableBeanFactory().createBean(clazz);
 	}
 

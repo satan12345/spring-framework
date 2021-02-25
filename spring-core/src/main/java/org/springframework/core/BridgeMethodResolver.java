@@ -67,6 +67,7 @@ public final class BridgeMethodResolver {
 	 */
 	public static Method findBridgedMethod(Method bridgeMethod) {
 		if (!bridgeMethod.isBridge()) {
+			//方法不是桥接方法 直接返回
 			return bridgeMethod;
 		}
 		Method bridgedMethod = cache.get(bridgeMethod);

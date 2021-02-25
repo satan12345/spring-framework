@@ -312,7 +312,10 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 		 * 然后进行强转 获取自定义的条件
 		 */
 		RequestCondition<?> condition = (element instanceof Class ?
-				getCustomTypeCondition((Class<?>) element) : getCustomMethodCondition((Method) element));
+				//获取class上的自定义
+				getCustomTypeCondition((Class<?>) element) :
+				//获取method上的自定义
+				getCustomMethodCondition((Method) element));
 
 		return (requestMapping != null ? createRequestMappingInfo(requestMapping, condition) : null);
 	}
@@ -357,7 +360,7 @@ public class RequestMappingHandlerMapping extends RequestMappingInfoHandlerMappi
 	 */
 	protected RequestMappingInfo createRequestMappingInfo(
 			RequestMapping requestMapping, @Nullable RequestCondition<?> customCondition) {
-		//提取@RequestMapping上的属性信息 封装成对象
+		//提取@RequestMapping上的属性信息 封装成RequestMappingInfo对象
 		RequestMappingInfo.Builder builder = RequestMappingInfo
 				//获取路径
 				.paths(resolveEmbeddedValuesInPatterns(requestMapping.path()))

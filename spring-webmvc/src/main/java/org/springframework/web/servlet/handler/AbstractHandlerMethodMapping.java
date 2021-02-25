@@ -262,11 +262,14 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			beanType = obtainApplicationContext().getType(beanName);
 		}
 		catch (Throwable ex) {
-			// An unresolvable bean type, probably from a lazy bean - let's ignore it.
+			/**
+			 * An unresolvable bean type, probably from a lazy bean - let's ignore it.
+			 */
 			if (logger.isTraceEnabled()) {
 				logger.trace("Could not resolve type for bean '" + beanName + "'", ex);
 			}
 		}
+
 		/**
 		 * bean的class类型不为空 且是处理器类
 		 *  (AnnotatedElementUtils.hasAnnotation(beanType, Controller.class) ||
@@ -290,7 +293,10 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 	protected void detectHandlerMethods(Object handler) {
 		//获取handler的Class类型
 		Class<?> handlerType = (handler instanceof String ?
-				obtainApplicationContext().getType((String) handler) : handler.getClass());
+				//如果是字符串 则根据名称获取类型
+				obtainApplicationContext().getType((String) handler) :
+				//直接获取类型
+				handler.getClass());
 
 		if (handlerType != null) {
 			//获取真实的类类型(防止是代理类)
@@ -299,6 +305,8 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			 * 获取对象的所有的方法映射信息的map
 			 * key为对应的方法
 			 * value为方法上@RequestMapping注解对应的RequestMappingInfo对象
+			 *
+			 * method-->RequestMappingInfo
 			 */
 			Map<Method, T> methods = MethodIntrospector.selectMethods(userType,
 					(MethodIntrospector.MetadataLookup<T>) method -> {
@@ -319,6 +327,7 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 			methods.forEach((method, mapping) -> {
 				/**
 				 * 找到Controller中 可执行的方法 不能私有的 不能 SpringProxy
+				 * 将方法封装成一个可调用的方法
 				 */
 				Method invocableMethod = AopUtils.selectInvocableMethod(method, userType);
 				//把方法进行注册
@@ -655,13 +664,13 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 				 * 方法中的参数列表 封装成methodParameter对象
 				 * 把方法封装成handlerMethod
 				 */
-				//创建HandlerMethod
+				//创建HandlerMethod 将controller与方法封装成对象
 				HandlerMethod handlerMethod = createHandlerMethod(handler, method);
 				//验证映射
 				validateMethodMapping(handlerMethod, mapping);
 				//将mapping->HandlerMethod放入map中
 				this.mappingLookup.put(mapping, handlerMethod);
-				//提取Mapping中所有的url地址
+				//提取requestMappingInfo上的url信息
 				List<String> directUrls = getDirectUrls(mapping);
 
 				for (String url : directUrls) {
@@ -784,13 +793,21 @@ public abstract class AbstractHandlerMethodMapping<T> extends AbstractHandlerMap
 
 
 	private static class MappingRegistration<T> {
-
+		/**
+		 * requestMappingInfo对象
+		 */
 		private final T mapping;
-
+		/**
+		 * controller 与方法封装的对象
+		 */
 		private final HandlerMethod handlerMethod;
-
+		/**
+		 * url地址
+		 */
 		private final List<String> directUrls;
-
+		/**
+		 * mapping名称
+		 */
 		@Nullable
 		private final String mappingName;
 
