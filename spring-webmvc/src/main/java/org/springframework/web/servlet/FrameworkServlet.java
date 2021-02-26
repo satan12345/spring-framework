@@ -911,17 +911,19 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
+		/**
+		 * 获取请求的方法 并封装成枚举
+		 */
 		HttpMethod httpMethod = HttpMethod.resolve(request.getMethod());
 		if (httpMethod == HttpMethod.PATCH || httpMethod == null) {
 			processRequest(request, response);
-		}
-		else {
+		}else {
+			//调用父类
 			super.service(request, response);
 		}
 	}
 
-	/**
+	/** 重写servlet-api父类中执行GET方法
 	 * Delegate GET requests to processRequest/doService.
 	 * <p>Will also be invoked by HttpServlet's default implementation of {@code doHead},
 	 * with a {@code NoBodyResponse} that just captures the content length.
@@ -935,7 +937,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		processRequest(request, response);
 	}
 
-	/**
+	/**执行post方法
 	 * Delegate POST requests to {@link #processRequest}.
 	 * @see #doService
 	 */
@@ -1017,7 +1019,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		super.doTrace(request, response);
 	}
 
-	/**
+	/**处理请求
 	 * Process this request, publishing an event regardless of the outcome.
 	 * <p>The actual event handling is performed by the abstract
 	 * {@link #doService} template method.
@@ -1029,6 +1031,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		Throwable failureCause = null;
 
 		LocaleContext previousLocaleContext = LocaleContextHolder.getLocaleContext();
+
 		LocaleContext localeContext = buildLocaleContext(request);
 
 		RequestAttributes previousAttributes = RequestContextHolder.getRequestAttributes();
@@ -1040,6 +1043,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 		initContextHolders(request, localeContext, requestAttributes);
 
 		try {
+			//处理请求 子类即DispatcherServlet会重写这个abstract的方法
 			doService(request, response);
 		}
 		catch (ServletException | IOException ex) {

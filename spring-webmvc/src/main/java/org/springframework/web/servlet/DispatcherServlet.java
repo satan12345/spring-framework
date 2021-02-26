@@ -537,11 +537,14 @@ public class DispatcherServlet extends FrameworkServlet {
 		initLocaleResolver(context);
 		//主体解析器对象初始化
 		initThemeResolver(context);
-		/**
-		 * 初始化handlerMapping组件
+		/**TODO
+		 * 初始化handlerMapping组件 处理器映射器
+		 * 	创建映射器处理器 并添加到集合中
+		 * 	解析映射器处理器(Controller+一系列组件)
+		 * 	controller方法封装
 		 */
 		initHandlerMappings(context);
-		//初始化我们的handlerAdapters
+		//TODO 初始化我们的handlerAdapters(映射器适配器)
 		initHandlerAdapters(context);
 		//实例化我们处理器异常解析器
 		initHandlerExceptionResolvers(context);
@@ -678,8 +681,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	private void initHandlerAdapters(ApplicationContext context) {
 		this.handlerAdapters = null;
-
+		//判断是从从起中自动发现 还是查找确定名称的bean
 		if (this.detectAllHandlerAdapters) {
+			//从容器中查找所有类为HandlerAdapter 的组件
 			// Find all HandlerAdapters in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerAdapter> matchingBeans =
 					BeanFactoryUtils.beansOfTypeIncludingAncestors(context, HandlerAdapter.class, true, false);
@@ -690,6 +694,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 		}else {
 			try {
+				//从容器中查找id为 handlerAdapter的映射器 适配器
 				HandlerAdapter ha = context.getBean(HANDLER_ADAPTER_BEAN_NAME, HandlerAdapter.class);
 				this.handlerAdapters = Collections.singletonList(ha);
 			}
@@ -701,6 +706,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Ensure we have at least some HandlerAdapters, by registering
 		// default HandlerAdapters if no other adapters are found.
 		if (this.handlerAdapters == null) {
+			//从配置dispatcher.properties 文件中获取
 			this.handlerAdapters = getDefaultStrategies(context, HandlerAdapter.class);
 			if (logger.isTraceEnabled()) {
 				logger.trace("No HandlerAdapters declared for servlet '" + getServletName() +
@@ -791,8 +797,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// We keep ViewResolvers in sorted order.
 				AnnotationAwareOrderComparator.sort(this.viewResolvers);
 			}
-		}
-		else {
+		}else {
 			try {
 				ViewResolver vr = context.getBean(VIEW_RESOLVER_BEAN_NAME, ViewResolver.class);
 				this.viewResolvers = Collections.singletonList(vr);
@@ -909,8 +914,19 @@ public class DispatcherServlet extends FrameworkServlet {
 		 * 	org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping,\
 		 * 	org.springframework.web.servlet.function.support.RouterFunctionMapping
 		 * 	拿handlerMapping举例
+		 * 	RequestMappingHandlerMapping 比较重要
 		 */
 		//获取接口的全类名 org.springframework.web.servlet.HandlerMapping
+
+		/**key :org.springframework.web.servlet.HandlerAdapter
+		 *
+		 * value: org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter,\
+		 * 	org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter,\
+		 * 	org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter,\
+		 * 	org.springframework.web.servlet.function.support.HandlerFunctionAdapter
+		 *
+		 * 	RequestMappingHandlerAdapter 比较重要
+		 */
 		String key = strategyInterface.getName();
 		//获取属性值
 		String value = defaultStrategies.getProperty(key);
@@ -990,11 +1006,18 @@ public class DispatcherServlet extends FrameworkServlet {
 				}
 			}
 		}
-		//数据存储
+		/**
+		 * 数据存储
+		 *
+		 */
 		// Make framework objects available to handlers and view objects.
+		//web容器存储到当前的request请求中去
 		request.setAttribute(WEB_APPLICATION_CONTEXT_ATTRIBUTE, getWebApplicationContext());
+		//存储国际化解析器
 		request.setAttribute(LOCALE_RESOLVER_ATTRIBUTE, this.localeResolver);
+		//存储主题解析器
 		request.setAttribute(THEME_RESOLVER_ATTRIBUTE, this.themeResolver);
+		//存储主题的资源
 		request.setAttribute(THEME_SOURCE_ATTRIBUTE, getThemeSource());
 
 		if (this.flashMapManager != null) {
@@ -1007,6 +1030,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		try {
+			//执行请求的分发
 			doDispatch(request, response);
 		}
 		finally {
@@ -1053,7 +1077,8 @@ public class DispatcherServlet extends FrameworkServlet {
 		});
 	}
 
-	/**
+	/**TODO
+	 * 	处理真实的请求
 	 * Process the actual dispatching to the handler.
 	 * <p>The handler will be obtained by applying the servlet's HandlerMappings in order.
 	 * The HandlerAdapter will be obtained by querying the servlet's installed HandlerAdapters
@@ -1066,6 +1091,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected void doDispatch(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		HttpServletRequest processedRequest = request;
+		//处理器执行器链
 		HandlerExecutionChain mappedHandler = null;
 		boolean multipartRequestParsed = false;
 
@@ -1080,12 +1106,15 @@ public class DispatcherServlet extends FrameworkServlet {
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
+				/**
+				 * TODO 决定当前的请求需要用到哪个处理器执行器链
+				 */
 				// Determine handler for the current request.
 				//HandlerExecutionChain mappedHandler = null;
 				//获取handlerMapping handler执行链
 				mappedHandler = getHandler(processedRequest);
-				//如果为handler执行链为空 则 返回
 				if (mappedHandler == null) {
+					//如果为handler执行链为空 则 返回
 					noHandlerFound(processedRequest, response);
 					return;
 				}
@@ -1307,10 +1336,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		if (this.handlerMappings != null) {
-			//遍历处理器映射器 根据request获取HandlerExecutionChain
+			//遍历处理器映射器集合 根据request获取HandlerExecutionChain
 			for (HandlerMapping mapping : this.handlerMappings) {
 				HandlerExecutionChain handler = mapping.getHandler(request);
 				if (handler != null) {
+					//找到handler执行器链 直接返回
 					return handler;
 				}
 			}
@@ -1318,7 +1348,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		return null;
 	}
 
-	/**
+	/**没有找到handler
 	 * No handler found -> set appropriate HTTP response status.
 	 * @param request current HTTP request
 	 * @param response current HTTP response
@@ -1328,11 +1358,12 @@ public class DispatcherServlet extends FrameworkServlet {
 		if (pageNotFoundLogger.isWarnEnabled()) {
 			pageNotFoundLogger.warn("No mapping for " + request.getMethod() + " " + getRequestUri(request));
 		}
+		//是否抛出异常
 		if (this.throwExceptionIfNoHandlerFound) {
 			throw new NoHandlerFoundException(request.getMethod(), getRequestUri(request),
 					new ServletServerHttpRequest(request).getHeaders());
-		}
-		else {
+		}else {
+
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}

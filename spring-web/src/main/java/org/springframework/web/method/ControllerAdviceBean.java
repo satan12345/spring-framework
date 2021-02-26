@@ -49,11 +49,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 public class ControllerAdviceBean implements Ordered {
 
 	/**
+	 * bean实例或者是beanName
 	 * Reference to the actual bean instance or a {@code String} representing
 	 * the bean name.
 	 */
 	private final Object beanOrName;
-
+	/**
+	 * bean是否是单例的标记
+	 */
 	private final boolean isSingleton;
 
 	/**
@@ -62,12 +65,16 @@ public class ControllerAdviceBean implements Ordered {
 	 */
 	@Nullable
 	private Object resolvedBean;
-
+	/**
+	 * bean对应的class类型
+	 */
 	@Nullable
 	private final Class<?> beanType;
 
 	private final HandlerTypePredicate beanTypePredicate;
-
+	/**
+	 * bean工厂
+	 */
 	@Nullable
 	private final BeanFactory beanFactory;
 
@@ -261,12 +268,19 @@ public class ControllerAdviceBean implements Ordered {
 	 */
 	public static List<ControllerAdviceBean> findAnnotatedBeans(ApplicationContext context) {
 		List<ControllerAdviceBean> adviceBeans = new ArrayList<>();
-		for (String name : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context, Object.class)) {
+		//获取容器中所有的bean名称
+		final String[] strings = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context, Object.class);
+		for (String name : strings) {
 			if (!ScopedProxyUtils.isScopedTarget(name)) {
+				/**
+				 * 遍历 获取 不以 scopedTarget.开头的bean名称
+				 * 获取标注了ControllerAdvice的bean名称
+				 */
 				ControllerAdvice controllerAdvice = context.findAnnotationOnBean(name, ControllerAdvice.class);
 				if (controllerAdvice != null) {
 					// Use the @ControllerAdvice annotation found by findAnnotationOnBean()
 					// in order to avoid a subsequent lookup of the same annotation.
+					//将属性封装成对象添加列表 并返回
 					adviceBeans.add(new ControllerAdviceBean(name, context, controllerAdvice));
 				}
 			}

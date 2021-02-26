@@ -32,12 +32,14 @@ import org.springframework.lang.Nullable;
  */
 public enum HttpMethod {
 
+
 	GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE;
 
 
 	private static final Map<String, HttpMethod> mappings = new HashMap<>(16);
 
 	static {
+		//将枚举的所有属性 封装到map中
 		for (HttpMethod httpMethod : values()) {
 			mappings.put(httpMethod.name(), httpMethod);
 		}

@@ -174,6 +174,7 @@ public class UrlPathHelper {
 			return rest;
 		}
 		else {
+
 			return getPathWithinApplication(request);
 		}
 	}

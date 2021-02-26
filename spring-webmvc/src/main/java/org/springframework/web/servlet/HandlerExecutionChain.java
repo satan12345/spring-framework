@@ -36,20 +36,23 @@ import org.springframework.util.ObjectUtils;
  * @author Juergen Hoeller
  * @since 20.06.2003
  * @see HandlerInterceptor
+ * handler执行器链
  */
 public class HandlerExecutionChain {
 
 	private static final Log logger = LogFactory.getLog(HandlerExecutionChain.class);
 	/**
-	 * 包含要执行的handler 即 controller
+	 * 包含要执行的handler 即 HandlerMethod
 	 */
 	private final Object handler;
 	/**
-	 * 拦截器
+	 * 拦截器数组
 	 */
 	@Nullable
 	private HandlerInterceptor[] interceptors;
-
+	/**
+	 * 拦截器列表
+	 */
 	@Nullable
 	private List<HandlerInterceptor> interceptorList;
 
@@ -75,6 +78,7 @@ public class HandlerExecutionChain {
 			HandlerExecutionChain originalChain = (HandlerExecutionChain) handler;
 			this.handler = originalChain.getHandler();
 			this.interceptorList = new ArrayList<>();
+			//将数组中的拦截器添加到集合中去
 			CollectionUtils.mergeArrayIntoCollection(originalChain.getInterceptors(), this.interceptorList);
 			CollectionUtils.mergeArrayIntoCollection(interceptors, this.interceptorList);
 		}
