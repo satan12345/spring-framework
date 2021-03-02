@@ -1114,13 +1114,16 @@ public class DispatcherServlet extends FrameworkServlet {
 				//获取handlerMapping handler执行链
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
-					//如果为handler执行链为空 则 返回
+					//如果为handler执行链为空的处理方法：设置响应码
 					noHandlerFound(processedRequest, response);
 					return;
 				}
 
 				// Determine handler adapter for the current request.
-				//从 handlerMapping中获取Handler 然后获取HandlerAdapter
+				//从 handlerMapping中获取Handler 即handlerMethod  然后获取HandlerAdapter
+				/** RequestMappingHandlerAdapter
+				 * TODO
+				 */
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -1133,20 +1136,20 @@ public class DispatcherServlet extends FrameworkServlet {
 						return;
 					}
 				}
-				//执行拦截器
+				//执行拦截器 preHandler
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
-				//真正的执行handler即我们的controller
+				//真正的执行handler即我们的handlerMethod
 				// Actually invoke the handler.
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
 					return;
 				}
-
+				//视图为空 则应用默认的视图名称
 				applyDefaultViewName(processedRequest, mv);
-				//执行拦截器的后置方法
+				//执行拦截器链的postHandler
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -1195,7 +1198,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 	}
 
-	/**
+	/**将获取的数据进行渲染
 	 * Handle the result of handler selection and handler invocation, which is
 	 * either a ModelAndView or an Exception to be resolved to a ModelAndView.
 	 */
@@ -1220,7 +1223,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Did the handler return a view to render?
 
 		if (mv != null && !mv.wasCleared()) {
-			//渲染
+			//TODO 渲染
 			render(mv, request, response);
 			if (errorView) {
 				WebUtils.clearErrorRequestAttributes(request);
@@ -1239,6 +1242,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		if (mappedHandler != null) {
 			// Exception (if any) is already handled..
+			//渲染结束 调用afterCompletion方法
 			mappedHandler.triggerAfterCompletion(request, response, null);
 		}
 	}
@@ -1375,6 +1379,17 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
 		if (this.handlerAdapters != null) {
+			/**
+			 * org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter,\
+			 * 判断是否实现了 HttpRequestHandler接口
+			 * 	org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter,\
+			 * 	判断是否实现了Controller接口
+			 *
+			 * 	org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter
+			 * 	调用 父类的
+			 * 	org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter#supports(java.lang.Object)
+			 * 	然后子类重写了supportsInternal方法 返回true
+			 */
 			//遍历所有的处理器适配器 返回适配当前handler的适配器
 			for (HandlerAdapter adapter : this.handlerAdapters) {
 				if (adapter.supports(handler)) {
@@ -1449,8 +1464,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// Determine locale for request and apply it to the response.
-		Locale locale =
-				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
+		//获取国际化信息
+		Locale locale = (this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
 		response.setLocale(locale);
 
 		View view;
@@ -1464,8 +1479,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
 						"' in servlet with name '" + getServletName() + "'");
 			}
-		}
-		else {
+		}else {
 			// No need to lookup: the ModelAndView object contains the actual View object.
 			view = mv.getView();
 			if (view == null) {
@@ -1521,7 +1535,9 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	protected View resolveViewName(String viewName, @Nullable Map<String, Object> model,
 			Locale locale, HttpServletRequest request) throws Exception {
-
+		/**
+		 * 遍历所有的视图解析器 解析视图
+		 */
 		if (this.viewResolvers != null) {
 			for (ViewResolver viewResolver : this.viewResolvers) {
 				View view = viewResolver.resolveViewName(viewName, locale);

@@ -471,7 +471,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 		if (!canHandle(viewName, locale)) {
 			return null;
 		}
-
+		//检查是否是重定向
 		// Check for special "redirect:" prefix.
 		if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
 			String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
@@ -483,7 +483,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 			}
 			return applyLifecycleMethods(REDIRECT_URL_PREFIX, view);
 		}
-
+		//是否是转发
 		// Check for special "forward:" prefix.
 		if (viewName.startsWith(FORWARD_URL_PREFIX)) {
 			String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
@@ -549,16 +549,18 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
 		Class<?> viewClass = getViewClass();
 		Assert.state(viewClass != null, "No view class");
-
+		//实例化视图对象
 		AbstractUrlBasedView view = (AbstractUrlBasedView) BeanUtils.instantiateClass(viewClass);
+		//设置前后缀
 		view.setUrl(getPrefix() + viewName + getSuffix());
+		//设置map
 		view.setAttributesMap(getAttributesMap());
 
 		String contentType = getContentType();
 		if (contentType != null) {
 			view.setContentType(contentType);
 		}
-
+		//设置暴露的参数信息
 		String requestContextAttribute = getRequestContextAttribute();
 		if (requestContextAttribute != null) {
 			view.setRequestContextAttribute(requestContextAttribute);
@@ -568,6 +570,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 		if (exposePathVariables != null) {
 			view.setExposePathVariables(exposePathVariables);
 		}
+
 		Boolean exposeContextBeansAsAttributes = getExposeContextBeansAsAttributes();
 		if (exposeContextBeansAsAttributes != null) {
 			view.setExposeContextBeansAsAttributes(exposeContextBeansAsAttributes);

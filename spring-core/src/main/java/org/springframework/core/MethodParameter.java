@@ -693,7 +693,7 @@ public class MethodParameter {
 		this.parameterNameDiscoverer = parameterNameDiscoverer;
 	}
 
-	/**
+	/**获取方法的参数名称
 	 * Return the name of the method/constructor parameter.
 	 * @return the parameter name (may be {@code null} if no
 	 * parameter name metadata is contained in the class file or no
@@ -709,12 +709,14 @@ public class MethodParameter {
 		if (discoverer != null) {
 			String[] parameterNames = null;
 			if (this.executable instanceof Method) {
+				//获取方法的参数名列表
 				parameterNames = discoverer.getParameterNames((Method) this.executable);
 			}
 			else if (this.executable instanceof Constructor) {
 				parameterNames = discoverer.getParameterNames((Constructor<?>) this.executable);
 			}
 			if (parameterNames != null) {
+				//获取指定索引名的参数名
 				this.parameterName = parameterNames[this.parameterIndex];
 			}
 			this.parameterNameDiscoverer = null;

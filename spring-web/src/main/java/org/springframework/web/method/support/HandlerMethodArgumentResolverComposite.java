@@ -112,7 +112,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 	@Nullable
 	public Object resolveArgument(MethodParameter parameter, @Nullable ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, @Nullable WebDataBinderFactory binderFactory) throws Exception {
-
+		//查找方法参数解析器 RequestParamMethodArgumentResolver
 		HandlerMethodArgumentResolver resolver = getArgumentResolver(parameter);
 		if (resolver == null) {
 			throw new IllegalArgumentException("Unsupported parameter type [" +
@@ -121,7 +121,7 @@ public class HandlerMethodArgumentResolverComposite implements HandlerMethodArgu
 		return resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
 	}
 
-	/**
+	/**获取一个解析指定方法的指定参数的解析器 并加入缓存
 	 * Find a registered {@link HandlerMethodArgumentResolver} that supports
 	 * the given method parameter.
 	 */

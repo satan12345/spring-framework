@@ -174,13 +174,16 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 			return createView(viewName, locale);
 		}
 		else {
+			//从缓存中获取
 			Object cacheKey = getCacheKey(viewName, locale);
 			View view = this.viewAccessCache.get(cacheKey);
 			if (view == null) {
+				//DCL
 				synchronized (this.viewCreationCache) {
 					view = this.viewCreationCache.get(cacheKey);
 					if (view == null) {
 						// Ask the subclass to create the View object.
+						//没有找到视图 则创建视图
 						view = createView(viewName, locale);
 						if (view == null && this.cacheUnresolved) {
 							view = UNRESOLVED_VIEW;
@@ -272,6 +275,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 */
 	@Nullable
 	protected View createView(String viewName, Locale locale) throws Exception {
+		//加载视图
 		return loadView(viewName, locale);
 	}
 

@@ -58,7 +58,9 @@ public class ModelAndViewContainer {
 
 	@Nullable
 	private ModelMap redirectModel;
-
+	/**
+	 * 是否重定向的标记位
+	 */
 	private boolean redirectModelScenario = false;
 
 	@Nullable
@@ -69,7 +71,9 @@ public class ModelAndViewContainer {
 	private final Set<String> bindingDisabled = new HashSet<>(4);
 
 	private final SessionStatus sessionStatus = new SimpleSessionStatus();
-
+	/**
+	 * 请求是否处理完成的标记位
+	 */
 	private boolean requestHandled = false;
 
 

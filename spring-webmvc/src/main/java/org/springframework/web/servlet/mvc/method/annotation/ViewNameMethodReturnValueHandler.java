@@ -79,13 +79,15 @@ public class ViewNameMethodReturnValueHandler implements HandlerMethodReturnValu
 			ModelAndViewContainer mavContainer, NativeWebRequest webRequest) throws Exception {
 
 		if (returnValue instanceof CharSequence) {
+			//返回值是字符串
 			String viewName = returnValue.toString();
+			//设置为视图名
 			mavContainer.setViewName(viewName);
+			//是否是重定向视图名
 			if (isRedirectViewName(viewName)) {
 				mavContainer.setRedirectModelScenario(true);
 			}
-		}
-		else if (returnValue != null) {
+		}else if (returnValue != null) {
 			// should not happen
 			throw new UnsupportedOperationException("Unexpected return type: " +
 					returnType.getParameterType().getName() + " in method: " + returnType.getMethod());

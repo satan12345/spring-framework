@@ -64,7 +64,7 @@ public class HandlerMethod {
 	/** Logger that is available to subclasses. */
 	protected final Log logger = LogFactory.getLog(getClass());
 	/**
-	 * handler 即 controller 也可能是 beanName
+	 * 方法所属的bean 即 controller 也可能是 beanName
 	 */
 	private final Object bean;
 
@@ -78,7 +78,9 @@ public class HandlerMethod {
 	private final Method method;
 
 	private final Method bridgedMethod;
-
+	/**
+	 * 方法的参数列表数组
+	 */
 	private final MethodParameter[] parameters;
 
 	@Nullable
@@ -296,6 +298,7 @@ public class HandlerMethod {
 	 * Return the actual return value type.
 	 */
 	public MethodParameter getReturnValueType(@Nullable Object returnValue) {
+		//将返回值包装成对象
 		return new ReturnValueMethodParameter(returnValue);
 	}
 

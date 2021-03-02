@@ -137,7 +137,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 	@Override
 	protected void renderMergedOutputModel(
 			Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
-
+		//暴露model
 		// Expose the model object as request attributes.
 		exposeModelAsRequestAttributes(model, request);
 
@@ -163,9 +163,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 				logger.debug("Including [" + getUrl() + "]");
 			}
 			rd.include(request, response);
-		}
-
-		else {
+		}else {
 			//执行forward 重定向
 			// Note: The forwarded resource is supposed to determine the content type itself.
 			if (logger.isDebugEnabled()) {
